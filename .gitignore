@@ -10,5 +10,20 @@ out/
 # Docs
 docs/
 
+# Lib
+lib/
+
 # Dotenv file
 .env
+
+# VSCode
+.vscode/
+
+# states
+.states/
+
+# .deps
+.deps/
+
+# src/artifacts
+src/artifacts
