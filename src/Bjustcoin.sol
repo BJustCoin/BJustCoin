@@ -14,6 +14,8 @@ contract Bjustcoin is ERC20, Ownable {
     uint256 constant INITIAL_SUPPLY = 100_000_000 * 1e18;
     mapping(address => bool) public blacklists;
 
+    error Blacklisted();
+
     constructor(address initialOwner) ERC20("Bjustcoin", "BJC") Ownable(initialOwner) {
         _mint(msg.sender, INITIAL_SUPPLY);
     }
@@ -22,7 +24,7 @@ contract Bjustcoin is ERC20, Ownable {
      * @notice  Adding or removing an address to the blacklist
      * @dev     Adding or removing an address to the blacklist
      * @param   _address  Address additing or removing to the blacklist
-     * @param   _isBlacklisting  true - add; false - remov;
+     * @param   _isBlacklisting  true - add; false - remove;
      */
     function blacklist(address _address, bool _isBlacklisting) external onlyOwner {
         blacklists[_address] = _isBlacklisting;
@@ -45,7 +47,7 @@ contract Bjustcoin is ERC20, Ownable {
      * @param   value  count tokens
      */
     function _update(address from, address to, uint256 value) internal virtual override {
-        require(!blacklists[to] && !blacklists[from], "Blacklisted");
+        if (blacklists[to] || blacklists[from]) revert Blacklisted();
         super._update(from, to, value);
     }
 }

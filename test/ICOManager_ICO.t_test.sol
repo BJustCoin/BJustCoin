@@ -24,6 +24,8 @@ contract ICOManagerICO_test is Test {
     uint256 month = 365 days / 12;
     uint256 BJCCurrentBalance = 0;
 
+    receive() external payable {}
+
     function setUp() public {
         icoManager = new ICOManager();
         _oracle = new Oracle();
@@ -36,13 +38,56 @@ contract ICOManagerICO_test is Test {
     }
 
     function sendEth(uint256 buyUSD) private view returns (uint256) {
-        return uint256(buyUSD * 1e18 / uint256(_oracle.getLatestPrice()));
+        return uint256(buyUSD * 1e18 / uint256(icoManager.getRate()));
+    }
+
+    function test_getTokenomicType_ICONotStarted() public {
+        vm.expectRevert(ICOManager.ICONotStarted.selector);
+        TokenomicType tt1 = icoManager.getTokenomicType();
+        assertEq(uint8(tt1), 0, "tt1");
+    }
+
+    function test_getTokenomicType_ICOCompleted() public {
+        icoManager.nextICOStage();
+        icoManager.nextICOStage();
+        icoManager.nextICOStage();
+        icoManager.nextICOStage();
+        icoManager.nextICOStage();
+        icoManager.nextICOStage();
+        vm.expectRevert(ICOManager.ICOCompleted.selector);
+        TokenomicType tt1 = icoManager.getTokenomicType();
+        assertEq(uint8(tt1), 0, "tt1");
+    }
+
+    function test_getTokenomicType() public {
+        icoManager.nextICOStage();
+        assertEq(uint8(icoManager.getTokenomicType()), uint8(TokenomicType.Strategic), "tt1");
+        icoManager.nextICOStage();
+        assertEq(uint8(icoManager.getTokenomicType()), uint8(TokenomicType.Seed), "tt2");
+        icoManager.nextICOStage();
+        assertEq(uint8(icoManager.getTokenomicType()), uint8(TokenomicType.PrivateSale), "tt3");
+        icoManager.nextICOStage();
+        assertEq(uint8(icoManager.getTokenomicType()), uint8(TokenomicType.IDO), "tt4");
+        icoManager.nextICOStage();
+        assertEq(uint8(icoManager.getTokenomicType()), uint8(TokenomicType.PublicSale), "tt5");
     }
 
     function test_ICOError_buy_befor_ICOStart() public {
         uint256 eth = sendEth(15) + gas;
         vm.expectRevert(ICOManager.ICONotStarted.selector);
         hoax(ALICE, 5 ether);
+        icoManager.buyICOToken{value: eth}();
+    }
+
+    function test_ICOToken_blacklist() public {
+        icoManager.blacklist(ALICE, true);
+        icoManager.nextICOStage();
+        uint256 eth = sendEth(1500) + gas;
+        vm.expectRevert(ICOManager.Blacklisted.selector);
+        hoax(ALICE, 5 ether);
+        icoManager.buyICOToken{value: eth}();
+
+        icoManager.blacklist(ALICE, false);
         icoManager.buyICOToken{value: eth}();
     }
 
@@ -83,7 +128,7 @@ contract ICOManagerICO_test is Test {
         icoManager.nextICOStage();
     }
 
-    function test_ICOToken() public {
+    function test_ICOTokenFull() public {
         //to Strategic stage
         icoManager.nextICOStage();
         startHoax(ALICE, 5 ether);
@@ -196,6 +241,13 @@ contract ICOManagerICO_test is Test {
         test_ICOToken_month42();
         vm.warp(block.timestamp + month);
         vm.stopPrank();
+        console.log("balance icoManager", address(icoManager).balance);
+        console.log("balance owner", address(this).balance);
+        console.log("this", address(this));
+        console.log("owner", address(icoManager.owner()));
+        icoManager.withdraw();
+        console.log("balance icoManager1", address(icoManager).balance);
+        console.log("balance owner1", address(this).balance);
     }
 
     function logBalance(string memory monthNumber) private view {

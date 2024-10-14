@@ -25,9 +25,13 @@ contract ICOManagerFutureTeam_test is Test {
         testScript = _icoManagerConst.InitFutureTeamData();
     }
 
+    function getEthCount(uint256 buyUSD) private view returns (uint256) {
+        return uint256(buyUSD * 1e18 / uint256(icoManager.getRate()));
+    }
+
     //Покупка токенов меньше минимальной покупки
     function test_FutureTeamToken_minSoldVolume() public {
-        uint256 sendEth = uint256((icoManager.MIN_SOLD_VOLUME() - 1) * 1e18 / uint256(_oracle.getLatestPrice()));
+        uint256 sendEth = getEthCount(icoManager.MIN_SOLD_VOLUME() - 1);
         startHoax(ALICE, 1 ether);
         vm.expectRevert(ICOManager.MinSoldError.selector);
         icoManager.buyFutureTeamToken{value: sendEth + gas}();
@@ -35,7 +39,7 @@ contract ICOManagerFutureTeam_test is Test {
 
     //Покупка токенов, для случая когда их недостаточно (цена по 1$ за токен)
     function test_FutureTeamToken_maxusd() public {
-        uint256 sendEth = uint256(testScript.startParams.maxTokenCount / uint256(_oracle.getLatestPrice())) * 1e2;
+        uint256 sendEth = getEthCount(testScript.startParams.maxTokenCount) / 1e16;
         console.log("sendEth = ", sendEth);
         startHoax(ALICE, 10000 ether);
         vm.expectRevert(ICOManager.InsufficientFunds.selector);
@@ -43,7 +47,7 @@ contract ICOManagerFutureTeam_test is Test {
     }
 
     function test_FutureTeamToken() public {
-        uint256 sendEth = uint256(testScript.startParams.buyUSD * 1e18 / uint256(_oracle.getLatestPrice()));
+        uint256 sendEth = getEthCount(testScript.startParams.buyUSD);
         startHoax(ALICE, 1 ether);
         icoManager.buyFutureTeamToken{value: sendEth + gas}();
 

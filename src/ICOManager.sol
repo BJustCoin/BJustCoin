@@ -1,4 +1,4 @@
-// SPDX-License-Identifier = MIT
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
 import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
@@ -81,12 +81,13 @@ contract ICOManager is Ownable {
     /////////////////////
     //      Errors     //
     /////////////////////
-    error OnlyNotInBlackList(address _addres);
+    error Blacklisted();
     error ICONotStarted();
     error ICOCompleted();
     error TokenAlreadyExist();
     error MinSoldError();
     error InsufficientFunds();
+    error withdrawError();
     //endregion
 
     //region - Modifier
@@ -99,7 +100,7 @@ contract ICOManager is Ownable {
      * @param   to  the address being checked
      */
     modifier notInBlackList(address to) {
-        if (blacklists[to]) revert OnlyNotInBlackList(to);
+        if (blacklists[to]) revert Blacklisted();
         _;
     }
     //endregion
@@ -197,7 +198,12 @@ contract ICOManager is Ownable {
      * @dev     withdraw eth from the contract
      */
     function withdraw() external onlyOwner {
-        payable(owner()).transfer(address(this).balance);
+        //payable(owner()).transfer(address(this).balance);
+        // get the amount of Ether stored in this contract
+        uint256 amount = address(this).balance;
+        // send all Ether to owner
+        (bool success,) = address(owner()).call{value: amount}("");
+        if (!success) revert withdrawError();
     }
 
     /**
@@ -411,7 +417,7 @@ contract ICOManager is Ownable {
      */
     function getTokenomicType(ICOStage _icoStage) private pure returns (TokenomicType) {
         if (_icoStage == ICOStage.NoICO) {
-            revert ICOCompleted();
+            revert ICONotStarted();
         }
         if (_icoStage == ICOStage.EndICO) {
             revert ICOCompleted();
@@ -461,9 +467,6 @@ contract ICOManager is Ownable {
      * @param   _settings  Settings tokenomic
      */
     function InitVestingToken(tokenomicSetting storage _settings) private {
-        if (_settings.stageToken != address(0)) {
-            revert TokenAlreadyExist();
-        }
         Schedule[] memory schedule = new Schedule[](_settings.vestingMonth);
         uint256 partTokenVesting = BASIS_TOKENS_FOR_VESTING_TOKENS / _settings.vestingMonth;
         for (uint8 i = 0; i < _settings.vestingMonth; i++) {
@@ -495,6 +498,7 @@ contract ICOManager is Ownable {
         }
         _baseToken.approve(settings.stageToken, tokens);
         VestingToken(settings.stageToken).mint(msg.sender, tokens);
+
         settings.soldTokenCount += tokens;
         emit BuyToken(owner(), msg.sender, settings.simvolToken, tokens, rate);
     }

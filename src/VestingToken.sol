@@ -105,7 +105,7 @@ contract VestingToken is Initializable, ERC20Upgradeable {
         external
         onlyVestingManager
     {
-        if (initialUnlock < 0 && initialUnlock > 100) {
+        if (initialUnlock < 0 || initialUnlock > 100) {
             revert PercentError();
         }
         uint256 scheduleLength = schedule.length;
