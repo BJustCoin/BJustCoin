@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.20.0;
 
 import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import {IERC20, SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
@@ -36,7 +36,7 @@ enum ICOStage {
     EndICO
 }
 
-struct tokenomicSetting {
+struct TokenomicSetting {
     address stageToken; //адрес по которому хранится тип токена
     string nameToken; //наименование токена
     string simvolToken; //символ токена
@@ -57,8 +57,8 @@ struct tokenomicSetting {
 contract ICOManager is Ownable {
     //BASIS_TOKENS_FOR_VESTING_TOKENS - наименьшее общее кратное для значений месяцев вестинга в токеномике
     uint256 public constant BASIS_TOKENS_FOR_VESTING_TOKENS = 5040;
-    uint256 constant MONTH = 365 days / 12;
-    uint256 constant DEFAULT_RATE = 257673;
+    uint256 public constant MONTH = 365 days / 12;
+    uint256 public constant DEFAULT_RATE = 257673;
     uint256 public constant MIN_SOLD_VOLUME = 1000; //10$
     Oracle internal _oracle;
     bool internal useOracle;
@@ -67,7 +67,7 @@ contract ICOManager is Ownable {
     Bjustcoin internal _baseToken;
     ICOStage private icoStage;
     mapping(address => bool) public blacklists;
-    mapping(TokenomicType => tokenomicSetting) private tokenomicSettings;
+    mapping(TokenomicType => TokenomicSetting) private tokenomicSettings;
 
     //region - Events
     /////////////////////
@@ -112,14 +112,14 @@ contract ICOManager is Ownable {
         _oracle = new Oracle();
 
         icoStage = ICOStage.NoICO;
-        InitTokenomics();
-        InitVestingToken(tokenomicSettings[TokenomicType.Advisors]);
-        InitVestingToken(tokenomicSettings[TokenomicType.Team]);
-        InitVestingToken(tokenomicSettings[TokenomicType.FutureTeam]);
-        InitVestingToken(tokenomicSettings[TokenomicType.Incentives]);
-        InitVestingToken(tokenomicSettings[TokenomicType.Liquidity]);
-        InitVestingToken(tokenomicSettings[TokenomicType.Ecosystem]);
-        InitVestingToken(tokenomicSettings[TokenomicType.Loyalty]);
+        initTokenomics();
+        initVestingToken(tokenomicSettings[TokenomicType.Advisors]);
+        initVestingToken(tokenomicSettings[TokenomicType.Team]);
+        initVestingToken(tokenomicSettings[TokenomicType.FutureTeam]);
+        initVestingToken(tokenomicSettings[TokenomicType.Incentives]);
+        initVestingToken(tokenomicSettings[TokenomicType.Liquidity]);
+        initVestingToken(tokenomicSettings[TokenomicType.Ecosystem]);
+        initVestingToken(tokenomicSettings[TokenomicType.Loyalty]);
     }
 
     //region External
@@ -230,11 +230,11 @@ contract ICOManager is Ownable {
         icoStage = ICOStage(uint256(icoStage) + 1);
         if (icoStage != ICOStage.EndICO && initialStage != ICOStage.NoICO) {
             TokenomicType _initTokenomicType = getTokenomicType(initialStage);
-            TokenomicType _TokenomicType = getTokenomicType(icoStage);
+            TokenomicType _tokenomicType = getTokenomicType(icoStage);
 
-            InitVestingToken(tokenomicSettings[_TokenomicType]);
+            initVestingToken(tokenomicSettings[_tokenomicType]);
 
-            tokenomicSettings[_TokenomicType].maxTokenCount += (
+            tokenomicSettings[_tokenomicType].maxTokenCount += (
                 tokenomicSettings[_initTokenomicType].maxTokenCount
                     - tokenomicSettings[_initTokenomicType].soldTokenCount
             );
@@ -247,7 +247,7 @@ contract ICOManager is Ownable {
             tokenomicSettings[TokenomicType.PublicSale].maxTokenCount =
                 tokenomicSettings[TokenomicType.PublicSale].soldTokenCount;
         } else {
-            InitVestingToken(tokenomicSettings[TokenomicType.Strategic]);
+            initVestingToken(tokenomicSettings[TokenomicType.Strategic]);
         }
 
         emit ICOStageChanged(msg.sender, initialStage, icoStage);
@@ -434,31 +434,31 @@ contract ICOManager is Ownable {
      * @notice  Initial tokenomics params
      * @dev     Initial tokenomics params
      */
-    function InitTokenomics() private {
+    function initTokenomics() private {
         tokenomicSettings[TokenomicType.Strategic] =
-            tokenomicSetting(address(0), "BJCStrategic", "BJCSTR", 3_000_000 * 1e18, 0, 35, 12, 24, 0);
+            TokenomicSetting(address(0), "BJCStrategic", "BJCSTR", 3_000_000 * 1e18, 0, 35, 12, 24, 0);
         tokenomicSettings[TokenomicType.Seed] =
-            tokenomicSetting(address(0), "BJCSeed", "BJCSEED", 4_000_000 * 1e18, 0, 45, 12, 24, 0);
+            TokenomicSetting(address(0), "BJCSeed", "BJCSEED", 4_000_000 * 1e18, 0, 45, 12, 24, 0);
         tokenomicSettings[TokenomicType.PrivateSale] =
-            tokenomicSetting(address(0), "BJCPrivateSale", "BJCPRI", 6_000_000 * 1e18, 0, 55, 12, 28, 5);
+            TokenomicSetting(address(0), "BJCPrivateSale", "BJCPRI", 6_000_000 * 1e18, 0, 55, 12, 28, 5);
         tokenomicSettings[TokenomicType.IDO] =
-            tokenomicSetting(address(0), "BJCIDO", "BJCIDO", 5_000_000 * 1e18, 0, 65, 6, 30, 15);
+            TokenomicSetting(address(0), "BJCIDO", "BJCIDO", 5_000_000 * 1e18, 0, 65, 6, 30, 15);
         tokenomicSettings[TokenomicType.PublicSale] =
-            tokenomicSetting(address(0), "BJCPublicSale", "BJCPUB", 15_000_000 * 1e18, 0, 75, 9, 24, 5);
+            TokenomicSetting(address(0), "BJCPublicSale", "BJCPUB", 15_000_000 * 1e18, 0, 75, 9, 24, 5);
         tokenomicSettings[TokenomicType.Advisors] =
-            tokenomicSetting(address(0), "BJCAdvisors", "BJCADV", 1_500_000 * 1e18, 0, 75, 12, 36, 3);
+            TokenomicSetting(address(0), "BJCAdvisors", "BJCADV", 1_500_000 * 1e18, 0, 75, 12, 36, 3);
         tokenomicSettings[TokenomicType.Team] =
-            tokenomicSetting(address(0), "BJCTeam", "BJCTEAM", 4_500_000 * 1e18, 0, 75, 24, 24, 5);
+            TokenomicSetting(address(0), "BJCTeam", "BJCTEAM", 4_500_000 * 1e18, 0, 75, 24, 24, 5);
         tokenomicSettings[TokenomicType.FutureTeam] =
-            tokenomicSetting(address(0), "BJCFutureTeam", "BJCFUT", 5_000_000 * 1e18, 0, 75, 12, 24, 0);
+            TokenomicSetting(address(0), "BJCFutureTeam", "BJCFUT", 5_000_000 * 1e18, 0, 75, 12, 24, 0);
         tokenomicSettings[TokenomicType.Incentives] =
-            tokenomicSetting(address(0), "BJCIncentives", "BJCINC", 11_000_000 * 1e18, 0, 75, 0, 18, 15);
+            TokenomicSetting(address(0), "BJCIncentives", "BJCINC", 11_000_000 * 1e18, 0, 75, 0, 18, 15);
         tokenomicSettings[TokenomicType.Liquidity] =
-            tokenomicSetting(address(0), "BJCLiquidity", "BJCLIQ", 15_000_000 * 1e18, 0, 75, 0, 18, 25);
+            TokenomicSetting(address(0), "BJCLiquidity", "BJCLIQ", 15_000_000 * 1e18, 0, 75, 0, 18, 25);
         tokenomicSettings[TokenomicType.Ecosystem] =
-            tokenomicSetting(address(0), "BJCEcosystem", "BJCECO", 15_000_000 * 1e18, 0, 75, 0, 12, 10);
+            TokenomicSetting(address(0), "BJCEcosystem", "BJCECO", 15_000_000 * 1e18, 0, 75, 0, 12, 10);
         tokenomicSettings[TokenomicType.Loyalty] =
-            tokenomicSetting(address(0), "BJCLoyalty", "BJCLOY", 15_000_000 * 1e18, 0, 75, 0, 48, 0);
+            TokenomicSetting(address(0), "BJCLoyalty", "BJCLOY", 15_000_000 * 1e18, 0, 75, 0, 48, 0);
     }
 
     /**
@@ -466,7 +466,7 @@ contract ICOManager is Ownable {
      * @dev     Initial tokenomic vesting data
      * @param   _settings  Settings tokenomic
      */
-    function InitVestingToken(tokenomicSetting storage _settings) private {
+    function initVestingToken(TokenomicSetting storage _settings) private {
         Schedule[] memory schedule = new Schedule[](_settings.vestingMonth);
         uint256 partTokenVesting = BASIS_TOKENS_FOR_VESTING_TOKENS / _settings.vestingMonth;
         for (uint8 i = 0; i < _settings.vestingMonth; i++) {
@@ -485,7 +485,7 @@ contract ICOManager is Ownable {
      * @dev     buy token
      * @param   settings  setting tokens for purchase
      */
-    function buyToken(tokenomicSetting storage settings) private {
+    function buyToken(TokenomicSetting storage settings) private {
         uint256 rate = getRate();
         //слишком маленький объем покупки
         if (msg.value < MIN_SOLD_VOLUME * 1e18 / rate) {

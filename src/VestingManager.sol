@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.20.0;
 
 import {Clones} from "@openzeppelin/contracts/proxy/Clones.sol";
 import {IVestingToken, Vesting} from "./IVestingToken.sol";
@@ -13,7 +13,7 @@ import {IVestingToken, Vesting} from "./IVestingToken.sol";
 contract VestingManager {
     address private _vestingImplementation;
 
-    constructor(address implementation) {
+    constructor(address implementation)  {
         _vestingImplementation = implementation;
     }
 
