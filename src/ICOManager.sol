@@ -60,11 +60,10 @@ contract ICOManager is Ownable {
     uint256 public constant MONTH = 365 days / 12;
     uint256 public constant DEFAULT_RATE = 257673;
     uint256 public constant MIN_SOLD_VOLUME = 1000; //10$
-    Oracle internal _oracle;
-    bool internal useOracle;
-    VestingToken internal _vestingTokenImpl;
-    VestingManager internal _vestingManager;
-    Bjustcoin internal _baseToken;
+    Oracle internal immutable _oracle;
+    VestingToken internal immutable _vestingTokenImpl;
+    VestingManager internal immutable _vestingManager;
+    Bjustcoin internal immutable _baseToken;
     ICOStage private icoStage;
     mapping(address => bool) public blacklists;
     mapping(TokenomicType => TokenomicSetting) private tokenomicSettings;

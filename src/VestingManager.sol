@@ -11,7 +11,7 @@ import {IVestingToken, Vesting} from "./IVestingToken.sol";
  * @dev
  */
 contract VestingManager {
-    address private _vestingImplementation;
+    address private immutable _vestingImplementation;
 
     error ImplementationError();
 
