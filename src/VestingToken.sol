@@ -6,7 +6,7 @@ import {Initializable} from "@oz-upgradeable/contracts/proxy/utils/Initializable
 import {ERC20Upgradeable} from "@oz-upgradeable/contracts/token/ERC20/ERC20Upgradeable.sol";
 import {OwnableUpgradeable} from "@oz-upgradeable/contracts/access/OwnableUpgradeable.sol";
 
-import {Vesting, Schedule} from "./IVestingToken.sol";
+import {Vesting, Schedule, IVestingToken} from "./IVestingToken.sol";
 
 /**
  * @title Контракт share-токена (вестинг-токен)
@@ -14,7 +14,7 @@ import {Vesting, Schedule} from "./IVestingToken.sol";
  * @dev Код предоставлен исключительно в ознакомительных целях и не протестирован
  * Из контракта убрано все лишнее, включая некоторые проверки, геттеры/сеттеры и события
  */
-contract VestingToken is Initializable, ERC20Upgradeable {
+contract VestingToken is IVestingToken, Initializable, ERC20Upgradeable {
     using SafeERC20 for IERC20;
 
     uint256 public immutable BASIS_POINTS;
@@ -33,6 +33,14 @@ contract VestingToken is Initializable, ERC20Upgradeable {
     mapping(address => uint256) private _initialLocked;
     mapping(address => uint256) private _released;
 
+    // region - Events
+    /////////////////////
+    //      Events     //
+    /////////////////////
+
+    event MintTokens(address indexed  token, address indexed to, uint256 tokenCount);
+    // endregion
+
     // region - Errors
 
     /////////////////////
@@ -40,6 +48,7 @@ contract VestingToken is Initializable, ERC20Upgradeable {
     /////////////////////
 
     error OnlyMinter();
+    error MinterNotSet();
     error OnlyVestingManager();
     error NotEnoughTokensToClaim();
     error StartTimeAlreadyElapsed();
@@ -82,6 +91,8 @@ contract VestingToken is Initializable, ERC20Upgradeable {
         public
         initializer
     {
+        if(minter == address(0)) revert MinterNotSet();
+
         __ERC20_init(name, symbol);
 
         _minter = minter;
@@ -105,7 +116,7 @@ contract VestingToken is Initializable, ERC20Upgradeable {
         external
         onlyVestingManager
     {
-        if (initialUnlock < 0 || initialUnlock > 100) {
+        if (initialUnlock > 100) {
             revert PercentError();
         }
         uint256 scheduleLength = schedule.length;
@@ -163,13 +174,11 @@ contract VestingToken is Initializable, ERC20Upgradeable {
         if (block.timestamp > _vesting.cliff) {
             revert MintingAfterCliffIsForbidden();
         }
-
-        _baseToken.safeTransferFrom(msg.sender, address(this), amount);
-
-        _mint(to, amount);
-
         _initialLocked[to] += amount;
         _initialLockedSupply += amount;
+        emit MintTokens(address(this), to, amount);
+        _mint(to, amount);
+        _baseToken.safeTransferFrom(msg.sender, address(this), amount);
     }
 
     // endregion

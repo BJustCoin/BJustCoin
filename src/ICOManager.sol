@@ -491,7 +491,7 @@ contract ICOManager is Ownable {
         if (msg.value < MIN_SOLD_VOLUME * 1e18 / rate) {
             revert MinSoldError();
         }
-        uint256 tokens = (msg.value / settings.price) * rate;
+        uint256 tokens = msg.value * rate / settings.price;
         //недостаточно токенов для продажи
         if (tokens > settings.maxTokenCount - settings.soldTokenCount) {
             revert InsufficientFunds();

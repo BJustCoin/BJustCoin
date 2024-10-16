@@ -22,12 +22,15 @@ lib/
 # states
 .states/
 
-# .deps
+# RemixIDE
 .deps/
+remix-slither-report.json
 
 # src/artifacts
 src/artifacts
 
-
 # lcov
 lcov.info
+
+# mythril
+myth_config.json
