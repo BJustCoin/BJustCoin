@@ -11,7 +11,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
  * @notice  Token ICO
  */
 contract Bjustcoin is ERC20, Ownable {
-    uint256 constant INITIAL_SUPPLY = 100_000_000 * 1e18;
+    uint256 constant public  INITIAL_SUPPLY = 100_000_000 * 1e18;
     mapping(address => bool) public blacklists;
 
     error Blacklisted();

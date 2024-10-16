@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20.0;
+pragma solidity ^0.8.20;
 
 struct Schedule {
     uint256 endTime;
