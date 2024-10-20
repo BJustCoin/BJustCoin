@@ -15,7 +15,7 @@ contract VestingManager {
 
     error ImplementationError();
 
-    constructor(address implementation)  {
+    constructor(address implementation) {
         if (implementation == address(0)) revert ImplementationError();
         _vestingImplementation = implementation;
     }
@@ -46,7 +46,6 @@ contract VestingManager {
         returns (address vestingToken)
     {
         vestingToken = Clones.clone(_vestingImplementation);
-
         IVestingToken(vestingToken).initialize(name, symbol, minter, baseToken);
     }
 }

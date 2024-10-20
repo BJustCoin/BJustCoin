@@ -86,7 +86,8 @@ contract ICOManager is Ownable {
     error TokenAlreadyExist();
     error MinSoldError();
     error InsufficientFunds();
-    error withdrawError();
+    error WithdrawError();
+    error NotApprove();
     //endregion
 
     //region - Modifier
@@ -202,7 +203,7 @@ contract ICOManager is Ownable {
         uint256 amount = address(this).balance;
         // send all Ether to owner
         (bool success,) = address(owner()).call{value: amount}("");
-        if (!success) revert withdrawError();
+        if (!success) revert WithdrawError();
     }
 
     /**
@@ -227,29 +228,26 @@ contract ICOManager is Ownable {
         }
         ICOStage initialStage = icoStage;
         icoStage = ICOStage(uint256(icoStage) + 1);
+        emit ICOStageChanged(msg.sender, initialStage, icoStage);
         if (icoStage != ICOStage.EndICO && initialStage != ICOStage.NoICO) {
             TokenomicType _initTokenomicType = getTokenomicType(initialStage);
             TokenomicType _tokenomicType = getTokenomicType(icoStage);
-
-            initVestingToken(tokenomicSettings[_tokenomicType]);
 
             tokenomicSettings[_tokenomicType].maxTokenCount += (
                 tokenomicSettings[_initTokenomicType].maxTokenCount
                     - tokenomicSettings[_initTokenomicType].soldTokenCount
             );
             tokenomicSettings[_initTokenomicType].maxTokenCount = tokenomicSettings[_initTokenomicType].soldTokenCount;
+            initVestingToken(tokenomicSettings[_tokenomicType]);
         } else if (icoStage == ICOStage.EndICO) {
-            _baseToken.burn(
-                tokenomicSettings[TokenomicType.PublicSale].maxTokenCount
-                    - tokenomicSettings[TokenomicType.PublicSale].soldTokenCount
-            );
+            uint256 burnCount = tokenomicSettings[TokenomicType.PublicSale].maxTokenCount
+                - tokenomicSettings[TokenomicType.PublicSale].soldTokenCount;
             tokenomicSettings[TokenomicType.PublicSale].maxTokenCount =
                 tokenomicSettings[TokenomicType.PublicSale].soldTokenCount;
+            _baseToken.burn(burnCount);
         } else {
             initVestingToken(tokenomicSettings[TokenomicType.Strategic]);
         }
-
-        emit ICOStageChanged(msg.sender, initialStage, icoStage);
     }
 
     //endregion
@@ -495,11 +493,10 @@ contract ICOManager is Ownable {
         if (tokens > settings.maxTokenCount - settings.soldTokenCount) {
             revert InsufficientFunds();
         }
-        _baseToken.approve(settings.stageToken, tokens);
-        VestingToken(settings.stageToken).mint(msg.sender, tokens);
-
-        settings.soldTokenCount += tokens;
+        if (!_baseToken.approve(settings.stageToken, tokens)) revert NotApprove();
         emit BuyToken(owner(), msg.sender, settings.simvolToken, tokens, rate);
+        VestingToken(settings.stageToken).mint(msg.sender, tokens);
+        settings.soldTokenCount += tokens;
     }
 
     /**

@@ -17,7 +17,7 @@ import {Vesting, Schedule, IVestingToken} from "./IVestingToken.sol";
 contract VestingToken is IVestingToken, Initializable, ERC20Upgradeable {
     using SafeERC20 for IERC20;
 
-    uint256 public immutable BASIS_POINTS;
+    uint256 public immutable basisPoints;
 
     address private _minter;
     address private _vestingManager;
@@ -26,7 +26,7 @@ contract VestingToken is IVestingToken, Initializable, ERC20Upgradeable {
     uint256 private _initialLockedSupply;
 
     constructor(uint256 _basisPoints) {
-        BASIS_POINTS = _basisPoints;
+        basisPoints = _basisPoints;
         _disableInitializers();
     }
 
@@ -87,13 +87,13 @@ contract VestingToken is IVestingToken, Initializable, ERC20Upgradeable {
      * @notice Так как это прокси, нужно выполнить инициализацию
      * @dev Создается и инициализируется только контрактом VestingManager
      */
-    function initialize(string calldata name, string calldata symbol, address minter, address baseToken)
+    function initialize(string calldata _name, string calldata _symbol, address minter, address baseToken)
         public
         initializer
     {
         if(minter == address(0)) revert MinterNotSet();
 
-        __ERC20_init(name, symbol);
+        __ERC20_init(_name, _symbol);
 
         _minter = minter;
         _baseToken = IERC20(baseToken);
@@ -158,7 +158,7 @@ contract VestingToken is IVestingToken, Initializable, ERC20Upgradeable {
             }
         }
 
-        if (totalPercent != BASIS_POINTS) {
+        if (totalPercent != basisPoints) {
             revert IncorrectSchedulePortions();
         }
     }
@@ -190,7 +190,7 @@ contract VestingToken is IVestingToken, Initializable, ERC20Upgradeable {
      */
     function claim() external {
         uint256 releasable = availableBalanceOf(msg.sender);
-        if (releasable == 0) {
+        if (releasable <= 0) {
             revert NotEnoughTokensToClaim();
         }
 
@@ -260,10 +260,10 @@ contract VestingToken is IVestingToken, Initializable, ERC20Upgradeable {
                 uint256 periodDuration = currentPeriodEnd - currentPeriodStart;
 
                 unlockedTokens +=
-                    (lockedTokensVesting * elapsedPeriodTime * currentPeriodPortion) / (periodDuration * BASIS_POINTS);
+                    (lockedTokensVesting * elapsedPeriodTime * currentPeriodPortion) / (periodDuration * basisPoints);
                 break;
             } else {
-                unlockedTokens += (lockedTokensVesting * currentPeriodPortion) / BASIS_POINTS;
+                unlockedTokens += (lockedTokensVesting * currentPeriodPortion) / basisPoints;
                 currentPeriodStart = currentPeriodEnd;
             }
         }
@@ -273,7 +273,7 @@ contract VestingToken is IVestingToken, Initializable, ERC20Upgradeable {
      * @notice Трансферить токены нельзя, только минтить и сжигать
      */
     function _update(address from, address to, uint256 amount) internal virtual override {
-        if (from != address(0) && to != address(0) && amount > 0) {
+        if (from != address(0) && to != address(0)) {
             revert TransfersNotAllowed();
         }
         super._update(from, to, amount);
