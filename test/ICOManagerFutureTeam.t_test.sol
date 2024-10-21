@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity ^0.8.18;
+pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import {Test, console} from "forge-std/Test.sol";
@@ -17,6 +17,8 @@ contract ICOManagerFutureTeam_test is Test {
     ICOManagerConst private _icoManagerConst;
     ICOManagerTestScript testScript;
     uint256 gas = 242194;
+    //icoManager.MIN_SOLD_VOLUME
+    uint256 private constant MIN_SOLD_VOLUME = 1000; //10$
 
     function setUp() public {
         icoManager = new ICOManager();
@@ -31,7 +33,7 @@ contract ICOManagerFutureTeam_test is Test {
 
     //Покупка токенов меньше минимальной покупки
     function test_FutureTeamToken_minSoldVolume() public {
-        uint256 sendEth = getEthCount(icoManager.MIN_SOLD_VOLUME() - 1);
+        uint256 sendEth = getEthCount(MIN_SOLD_VOLUME - 1);
         startHoax(ALICE, 1 ether);
         vm.expectRevert(ICOManager.MinSoldError.selector);
         icoManager.buyFutureTeamToken{value: sendEth + gas}();

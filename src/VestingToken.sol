@@ -4,7 +4,6 @@ pragma solidity ^0.8.20;
 import {IERC20, SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import {Initializable} from "@oz-upgradeable/contracts/proxy/utils/Initializable.sol";
 import {ERC20Upgradeable} from "@oz-upgradeable/contracts/token/ERC20/ERC20Upgradeable.sol";
-import {OwnableUpgradeable} from "@oz-upgradeable/contracts/access/OwnableUpgradeable.sol";
 
 import {Vesting, Schedule, IVestingToken} from "./IVestingToken.sol";
 
@@ -38,7 +37,7 @@ contract VestingToken is IVestingToken, Initializable, ERC20Upgradeable {
     //      Events     //
     /////////////////////
 
-    event MintTokens(address indexed  token, address indexed to, uint256 tokenCount);
+    event MintTokens(address indexed token, address indexed to, uint256 tokenCount);
     // endregion
 
     // region - Errors
@@ -91,7 +90,7 @@ contract VestingToken is IVestingToken, Initializable, ERC20Upgradeable {
         public
         initializer
     {
-        if(minter == address(0)) revert MinterNotSet();
+        if (minter == address(0)) revert MinterNotSet();
 
         __ERC20_init(_name, _symbol);
 
@@ -116,7 +115,7 @@ contract VestingToken is IVestingToken, Initializable, ERC20Upgradeable {
         external
         onlyVestingManager
     {
-        if (initialUnlock > 100) {
+        if (initialUnlock >= 101) {
             revert PercentError();
         }
         uint256 scheduleLength = schedule.length;
@@ -127,8 +126,11 @@ contract VestingToken is IVestingToken, Initializable, ERC20Upgradeable {
         _vesting.cliff = cliff;
         _vesting.initialUnlock = initialUnlock;
 
-        for (uint256 i = 0; i < scheduleLength; i++) {
+        for (uint256 i = 0; i < scheduleLength;) {
             _vesting.schedule.push(schedule[i]);
+            unchecked {
+                ++i;
+            }
         }
     }
 
@@ -148,13 +150,17 @@ contract VestingToken is IVestingToken, Initializable, ERC20Upgradeable {
 
         uint256 totalPercent;
 
-        for (uint256 i = 0; i < scheduleLength; i++) {
+        for (uint256 i = 0; i < scheduleLength;) {
             totalPercent += schedule[i].portion;
 
             bool isEndTimeOutOfOrder = (i != 0) && schedule[i - 1].endTime >= schedule[i].endTime;
 
             if (cliff >= schedule[i].endTime || isEndTimeOutOfOrder) {
                 revert IncorrectScheduleTime(schedule[i].endTime);
+            }
+
+            unchecked {
+                ++i;
             }
         }
 
@@ -174,11 +180,12 @@ contract VestingToken is IVestingToken, Initializable, ERC20Upgradeable {
         if (block.timestamp > _vesting.cliff) {
             revert MintingAfterCliffIsForbidden();
         }
-        _initialLocked[to] += amount;
-        _initialLockedSupply += amount;
-        emit MintTokens(address(this), to, amount);
+        _initialLocked[to] = _initialLocked[to] + amount;
+        _initialLockedSupply = _initialLockedSupply + amount;
+        address thisAddress = address(this);
+        emit MintTokens(thisAddress, to, amount);
         _mint(to, amount);
-        _baseToken.safeTransferFrom(msg.sender, address(this), amount);
+        _baseToken.safeTransferFrom(msg.sender, thisAddress, amount);
     }
 
     // endregion
@@ -194,7 +201,7 @@ contract VestingToken is IVestingToken, Initializable, ERC20Upgradeable {
             revert NotEnoughTokensToClaim();
         }
 
-        _released[msg.sender] += releasable;
+        _released[msg.sender] = _released[msg.sender] + releasable;
 
         _burn(msg.sender, releasable);
         _baseToken.safeTransfer(msg.sender, releasable);
@@ -250,7 +257,7 @@ contract VestingToken is IVestingToken, Initializable, ERC20Upgradeable {
         uint256 lockedTokensVesting = lockedTokens - initialUnlockedTokens;
         unlockedTokens = initialUnlockedTokens;
         //---
-        for (uint256 i = 0; i < scheduleLength; i++) {
+        for (uint256 i = 0; i < scheduleLength;) {
             Schedule memory currentPeriod = schedule[i];
             uint256 currentPeriodEnd = currentPeriod.endTime;
             uint256 currentPeriodPortion = currentPeriod.portion;
@@ -265,6 +272,9 @@ contract VestingToken is IVestingToken, Initializable, ERC20Upgradeable {
             } else {
                 unlockedTokens += (lockedTokensVesting * currentPeriodPortion) / basisPoints;
                 currentPeriodStart = currentPeriodEnd;
+            }
+            unchecked {
+                ++i;
             }
         }
     }

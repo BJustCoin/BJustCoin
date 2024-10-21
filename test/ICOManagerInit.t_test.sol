@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity ^0.8.13;
+pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import {Test, console} from "forge-std/Test.sol";
@@ -11,6 +11,8 @@ import "../src/VestingToken.sol";
 contract ICOManagerInitTest is Test {
     address internal ALICE = vm.addr(0xA11CE);
     ICOManager public icoManager;
+    //icoManager.MIN_SOLD_VOLUME
+    uint256 private constant MIN_SOLD_VOLUME = 1000; //10$
 
     function setUp() public {
         icoManager = new ICOManager();

@@ -1,9 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import {IERC20, SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import {ERC20Mock} from "@openzeppelin/contracts/mocks/token/ERC20Mock.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {VestingManager} from "./VestingManager.sol";
 import {Schedule, Vesting} from "./IVestingToken.sol";
@@ -56,10 +54,10 @@ struct TokenomicSetting {
  */
 contract ICOManager is Ownable {
     //BASIS_TOKENS_FOR_VESTING_TOKENS - наименьшее общее кратное для значений месяцев вестинга в токеномике
-    uint256 public constant BASIS_TOKENS_FOR_VESTING_TOKENS = 5040;
-    uint256 public constant MONTH = 365 days / 12;
-    uint256 public constant DEFAULT_RATE = 257673;
-    uint256 public constant MIN_SOLD_VOLUME = 1000; //10$
+    uint256 private constant BASIS_TOKENS_FOR_VESTING_TOKENS = 5040;
+    uint256 private constant MONTH = 365 days / 12;
+    uint256 private constant DEFAULT_RATE = 257673;
+    uint256 private constant MIN_SOLD_VOLUME = 1000; //10$
     Oracle internal immutable _oracle;
     VestingToken internal immutable _vestingTokenImpl;
     VestingManager internal immutable _vestingManager;
@@ -129,8 +127,8 @@ contract ICOManager is Ownable {
      */
     function buyICOToken() external payable notInBlackList(msg.sender) {
         if (icoStage == ICOStage.NoICO) revert ICONotStarted();
-        if (icoStage == ICOStage.EndICO) revert ICOCompleted();
-        if (icoStage == ICOStage.Strategic) buyStrategicToken();
+        else if (icoStage == ICOStage.EndICO) revert ICOCompleted();
+        else if (icoStage == ICOStage.Strategic) buyStrategicToken();
         else if (icoStage == ICOStage.Seed) buySeedToken();
         else if (icoStage == ICOStage.PrivateSale) buyPrivateSaleToken();
         else if (icoStage == ICOStage.IDO) buyIDOToken();
@@ -197,7 +195,7 @@ contract ICOManager is Ownable {
      * @notice  withdraw eth from the contract
      * @dev     withdraw eth from the contract
      */
-    function withdraw() external onlyOwner {
+    function withdraw() external payable onlyOwner {
         //payable(owner()).transfer(address(this).balance);
         // get the amount of Ether stored in this contract
         uint256 amount = address(this).balance;
@@ -212,16 +210,18 @@ contract ICOManager is Ownable {
      * @param   _address  Address additing or removing to the blacklist
      * @param   _isBlacklisting  true - add; false - remov;
      */
-    function blacklist(address _address, bool _isBlacklisting) external onlyOwner {
-        blacklists[_address] = _isBlacklisting;
-        _baseToken.blacklist(_address, _isBlacklisting);
+    function blacklist(address _address, bool _isBlacklisting) external payable onlyOwner {
+        if (blacklists[_address] != _isBlacklisting) {
+            blacklists[_address] = _isBlacklisting;
+            _baseToken.blacklist(_address, _isBlacklisting);
+        }
     }
 
     /**
      * @notice  Moving the ICO to the next stage
      * @dev     Moving the ICO to the next stage
      */
-    function nextICOStage() external onlyOwner {
+    function nextICOStage() external payable onlyOwner {
         //"ICO completed"
         if (icoStage == ICOStage.EndICO) {
             revert ICOCompleted();
@@ -464,16 +464,17 @@ contract ICOManager is Ownable {
      * @param   _settings  Settings tokenomic
      */
     function initVestingToken(TokenomicSetting storage _settings) private {
-        Schedule[] memory schedule = new Schedule[](_settings.vestingMonth);
-        uint256 partTokenVesting = BASIS_TOKENS_FOR_VESTING_TOKENS / _settings.vestingMonth;
-        for (uint8 i = 0; i < _settings.vestingMonth; i++) {
-            schedule[i] = Schedule(block.timestamp + _settings.cliffMonth * MONTH + (i + 1) * MONTH, partTokenVesting);
+        TokenomicSetting memory tsSettings = _settings;
+        Schedule[] memory schedule = new Schedule[](tsSettings.vestingMonth);
+        uint256 partTokenVesting = BASIS_TOKENS_FOR_VESTING_TOKENS / tsSettings.vestingMonth;
+        for (uint256 i = 0; i < tsSettings.vestingMonth; i++) {
+            schedule[i] = Schedule(block.timestamp + tsSettings.cliffMonth * MONTH + (i + 1) * MONTH, partTokenVesting);
         }
         Vesting memory vestingParams = Vesting(
-            block.timestamp, block.timestamp + _settings.cliffMonth * MONTH, _settings.unlockTokensPercent, schedule
+            block.timestamp, block.timestamp + tsSettings.cliffMonth * MONTH, tsSettings.unlockTokensPercent, schedule
         );
         _settings.stageToken = _vestingManager.createVesting(
-            _settings.nameToken, _settings.simvolToken, address(_baseToken), address(this), vestingParams
+            tsSettings.nameToken, tsSettings.simvolToken, address(_baseToken), address(this), vestingParams
         );
     }
 
@@ -485,7 +486,7 @@ contract ICOManager is Ownable {
     function buyToken(TokenomicSetting storage settings) private {
         uint256 rate = getRate();
         //слишком маленький объем покупки
-        if (msg.value < MIN_SOLD_VOLUME * 1e18 / rate) {
+        if (msg.value <= MIN_SOLD_VOLUME * 1e18 / rate) {
             revert MinSoldError();
         }
         uint256 tokens = msg.value * rate / settings.price;
@@ -493,8 +494,8 @@ contract ICOManager is Ownable {
         if (tokens > settings.maxTokenCount - settings.soldTokenCount) {
             revert InsufficientFunds();
         }
-        if (!_baseToken.approve(settings.stageToken, tokens)) revert NotApprove();
         emit BuyToken(owner(), msg.sender, settings.simvolToken, tokens, rate);
+        if (!_baseToken.approve(settings.stageToken, tokens)) revert NotApprove();
         VestingToken(settings.stageToken).mint(msg.sender, tokens);
         settings.soldTokenCount += tokens;
     }
