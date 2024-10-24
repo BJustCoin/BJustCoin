@@ -2,6 +2,7 @@
 pragma solidity ^0.8.20;
 
 import {Clones} from "@openzeppelin/contracts/proxy/Clones.sol";
+import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {IVestingToken, Vesting} from "./IVestingToken.sol";
 
 /**
@@ -10,12 +11,12 @@ import {IVestingToken, Vesting} from "./IVestingToken.sol";
  * и устанавливать на них расписание вестинга
  * @dev
  */
-contract VestingManager {
+contract VestingManager is Ownable {
     address private immutable _vestingImplementation;
 
     error ImplementationError();
 
-    constructor(address implementation) {
+    constructor(address implementation) Ownable(msg.sender) {
         if (implementation == address(0)) revert ImplementationError();
         _vestingImplementation = implementation;
     }
@@ -33,7 +34,7 @@ contract VestingManager {
         address baseToken,
         address minter,
         Vesting calldata vesting
-    ) external returns (address vestingToken) {
+    ) external onlyOwner returns (address vestingToken) {
         vestingToken = _createVestingToken(name, symbol, minter, baseToken);
 
         IVestingToken(vestingToken).setVestingSchedule(
