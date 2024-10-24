@@ -11,7 +11,7 @@ contract Oracle {
         priceFeed = AggregatorV3Interface(0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419);
     }
 
-    function getLatestPrice() public view returns (int256 price) {
+    function getLatestPrice() public view returns (int256) {
         int256 price;
         (, price,,,) = priceFeed.latestRoundData();
         return  price / 1e6;
