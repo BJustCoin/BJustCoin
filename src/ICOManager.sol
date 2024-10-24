@@ -72,6 +72,7 @@ contract ICOManager is Ownable {
     /////////////////////
     event ICOStageChanged(address indexed from, ICOStage initialStage, ICOStage newStage);
     event BuyToken(address indexed from, address indexed to, string tokenSimvol, uint256 tokenCount, uint256 rate);
+    event Withdraw(address indexed to, uint256 amount);
     //endregion
 
     //region - Errors
@@ -199,6 +200,7 @@ contract ICOManager is Ownable {
         //payable(owner()).transfer(address(this).balance);
         // get the amount of Ether stored in this contract
         uint256 amount = address(this).balance;
+        emit Withdraw(owner(), amount);
         // send all Ether to owner
         (bool success,) = address(owner()).call{value: amount}("");
         if (!success) revert WithdrawError();
