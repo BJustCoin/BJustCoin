@@ -14,6 +14,8 @@ import {IVestingToken, Vesting} from "./IVestingToken.sol";
 contract VestingManager is Ownable {
     address private immutable _vestingImplementation;
 
+    event CreateVestingToken(address indexed addressToken, string name, string symbol);
+
     error ImplementationError();
 
     constructor(address implementation) Ownable(msg.sender) {
@@ -36,7 +38,7 @@ contract VestingManager is Ownable {
         Vesting calldata vesting
     ) external onlyOwner returns (address vestingToken) {
         vestingToken = _createVestingToken(name, symbol, minter, baseToken);
-
+        emit CreateVestingToken(vestingToken, name, symbol);
         IVestingToken(vestingToken).setVestingSchedule(
             vesting.startTime, vesting.cliff, vesting.initialUnlock, vesting.schedule
         );
