@@ -2,7 +2,7 @@
 pragma solidity ^0.8.20;
 
 contract Oracle {
-    AggregatorV3Interface internal priceFeed;
+    AggregatorV3Interface internal immutable priceFeed;
 
     error GetLastPriceError();
 
