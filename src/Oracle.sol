@@ -12,7 +12,9 @@ contract Oracle {
     }
 
     function getLatestPrice() public view returns (int256 price) {
+        int256 price;
         (, price,,,) = priceFeed.latestRoundData();
+        return  price / 1e6;
     }
 }
 
