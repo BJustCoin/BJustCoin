@@ -5,7 +5,6 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 /**
- * @author  Code Tesla Labs
  * @title   BJustCoin
  * @dev     Token ICO
  * @notice  Token ICO
@@ -31,8 +30,8 @@ contract Bjustcoin is ERC20, Ownable {
     }
 
     /**
-     * @notice  burn BJustCoin
-     * @dev     burn BJustCoin
+     * @notice  burn BJustCoin. It is used if, at the end of the ICO, there are unsold tokens allocated for all stages of the ICO
+     * @dev     burn BJustCoin. It is used if, at the end of the ICO, there are unsold tokens allocated for all stages of the ICO
      * @param   amount  count burn token
      */
     function burn(uint256 amount) external onlyOwner {
@@ -40,8 +39,7 @@ contract Bjustcoin is ERC20, Ownable {
     }
 
     /**
-     * @notice  token transfer
-     * @dev     token transfer
+     * @dev     moving tokens between wallets. If one of the participants is blacklisted, the Blacklisted error is called
      * @param   from  address from
      * @param   to  address to
      * @param   value  count tokens

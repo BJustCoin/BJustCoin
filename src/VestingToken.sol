@@ -8,10 +8,8 @@ import {ERC20Upgradeable} from "@oz-upgradeable/contracts/token/ERC20/ERC20Upgra
 import {Vesting, Schedule, IVestingToken} from "./IVestingToken.sol";
 
 /**
- * @title Контракт share-токена (вестинг-токен)
- * @notice Отвечает за логику блокировки/разблокировки средств
- * @dev Код предоставлен исключительно в ознакомительных целях и не протестирован
- * Из контракта убрано все лишнее, включая некоторые проверки, геттеры/сеттеры и события
+ * @title The vesting token contract
+ * @notice Responsible for the logic of blocking/unblocking funds
  */
 contract VestingToken is IVestingToken, Initializable, ERC20Upgradeable {
     using SafeERC20 for IERC20;
@@ -83,8 +81,12 @@ contract VestingToken is IVestingToken, Initializable, ERC20Upgradeable {
     // region - Initialize
 
     /**
-     * @notice Так как это прокси, нужно выполнить инициализацию
-     * @dev Создается и инициализируется только контрактом VestingManager
+     * @notice initialization
+     * @dev It is created and initialized only by the VestingManager contract
+     * @param   _name  name vesting token
+     * @param   _symbol  symbol vesting token
+     * @param   minter  address the address that owns the right to mint tokens
+     * @param   baseToken  address base token.
      */
     function initialize(string calldata _name, string calldata _symbol, address minter, address baseToken)
         public
@@ -108,8 +110,12 @@ contract VestingToken is IVestingToken, Initializable, ERC20Upgradeable {
     // region - Set vesting schedule
 
     /**
-     * @notice Установка расписания также выполняется контрактом VestingManager
-     * @dev Здесь важно проверить что расписание было передано корректное
+     * @notice The schedule is set by the VestingManager contract
+     * @dev The schedule is set by the VestingManager contract
+     * @param   startTime  start time
+     * @param   cliff  cliff time
+     * @param   initialUnlock  unlocked tokens after cliff time
+     * @param   schedule  task scheduler
      */
     function setVestingSchedule(uint256 startTime, uint256 cliff, uint8 initialUnlock, Schedule[] calldata schedule)
         external
@@ -134,6 +140,13 @@ contract VestingToken is IVestingToken, Initializable, ERC20Upgradeable {
         }
     }
 
+    /**
+     * @dev     check vesting tasck schedule
+     * @param   startTime  start time
+     * @param   cliff  cliff time
+     * @param   schedule  task shedule
+     * @param   scheduleLength  shedule lenght
+     */
     function _checkVestingSchedule(
         uint256 startTime,
         uint256 cliff,
@@ -152,13 +165,10 @@ contract VestingToken is IVestingToken, Initializable, ERC20Upgradeable {
 
         for (uint256 i = 0; i < scheduleLength;) {
             totalPercent += schedule[i].portion;
-
             bool isEndTimeOutOfOrder = (i != 0) && schedule[i - 1].endTime >= schedule[i].endTime;
-
             if (cliff >= schedule[i].endTime || isEndTimeOutOfOrder) {
                 revert IncorrectScheduleTime(schedule[i].endTime);
             }
-
             unchecked {
                 ++i;
             }
@@ -172,9 +182,11 @@ contract VestingToken is IVestingToken, Initializable, ERC20Upgradeable {
     // endregion
 
     // region - Mint
-
     /**
-     * @notice Списываем токен который будем блокировать и минтим share-токен
+     * @notice  we are writing off base token and mint vestingToken
+     * @dev     we are writing off base token and mint vestingToken
+     * @param   to  address to
+     * @param   amount  count token
      */
     function mint(address to, uint256 amount) external onlyMinter {
         if (block.timestamp > _vesting.cliff) {
@@ -191,9 +203,9 @@ contract VestingToken is IVestingToken, Initializable, ERC20Upgradeable {
     // endregion
 
     // region - Claim
-
     /**
-     * @notice Сжигаем share-токен и переводим бенефициару разблокированные базовые токены
+     * @notice  Burt vestingTokens and transfer the unlocked basic tokens to the beneficiary
+     * @dev     Burt vestingTokens and transfer the unlocked basic tokens to the beneficiary
      */
     function claim() external {
         uint256 releasable = availableBalanceOf(msg.sender);
@@ -206,43 +218,72 @@ contract VestingToken is IVestingToken, Initializable, ERC20Upgradeable {
         _burn(msg.sender, releasable);
         _baseToken.safeTransfer(msg.sender, releasable);
     }
-
     // endregion
 
     // region - Vesting getters
-
+    /**
+     * @notice  get vesting structure
+     * @dev     get vesting structure
+     * @return  Vesting  structure
+     */
     function getVestingSchedule() public view returns (Vesting memory) {
         return _vesting;
     }
 
+    /**
+     * @notice  number of unlocked tokens
+     * @dev     number of unlocked tokens
+     * @return  uint256  count tokens
+     */
     function unlockedSupply() external view returns (uint256) {
         return _totalUnlocked();
     }
 
+    /**
+     * @notice  number of locked tokens
+     * @dev     number of locked tokens
+     * @return  uint256  count tokens
+     */
     function lockedSupply() external view returns (uint256) {
         return _initialLockedSupply - _totalUnlocked();
     }
 
+    /**
+     * @notice  the wallet balance available for withdrawal
+     * @dev     the wallet balance available for withdrawal
+     * @param   account  wallet address
+     * @return  releasable  count tokens
+     */
     function availableBalanceOf(address account) public view returns (uint256 releasable) {
         releasable = _unlockedOf(account) - _released[account];
     }
-
     // endregion
 
     // region - Private functions
 
+    /**
+     * @dev     determining the number of unlocked tokens
+     * @param   account  wallet address
+     * @return  uint256  count tokens
+     */
     function _unlockedOf(address account) private view returns (uint256) {
         return _computeUnlocked(_initialLocked[account], block.timestamp);
     }
 
+    /**
+     * @dev     all unlocked tokens
+     * @return  uint256  count tokens
+     */
     function _totalUnlocked() private view returns (uint256) {
         return _computeUnlocked(_initialLockedSupply, block.timestamp);
     }
 
     /**
-     * @notice Основная функция для расчета разблокированных токенов
-     * @dev Проверяется сколько прошло полных периодов и сколько времени прошло
-     * после последнего полного периода.
+     * @notice The main function for calculating unlocked tokens
+     * @dev It checks how many full periods have passed and how much time has passed since the last full period.
+     * @param   lockedTokens  locked tokens
+     * @param   time  time elapsed since the beginning of the vesting
+     * @return  unlockedTokens  unlocked tokens
      */
     function _computeUnlocked(uint256 lockedTokens, uint256 time) private view returns (uint256 unlockedTokens) {
         if (time < _vesting.cliff) {
@@ -280,7 +321,11 @@ contract VestingToken is IVestingToken, Initializable, ERC20Upgradeable {
     }
 
     /**
-     * @notice Трансферить токены нельзя, только минтить и сжигать
+     * @notice  Available only mint and claim
+     * @dev     Available only mint and claim
+     * @param   from  address from
+     * @param   to  addres to
+     * @param   amount  count tokens
      */
     function _update(address from, address to, uint256 amount) internal virtual override {
         if (from != address(0) && to != address(0)) {

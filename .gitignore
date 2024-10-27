@@ -28,6 +28,7 @@ remix-slither-report.json
 
 # src/artifacts
 src/artifacts
+src/flatten
 
 # lcov
 lcov.info

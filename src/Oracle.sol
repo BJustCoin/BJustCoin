@@ -11,10 +11,14 @@ contract Oracle {
         priceFeed = AggregatorV3Interface(0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419);
     }
 
+    /**
+     * @notice  usd/eth exchange rate in cents
+     * @return  int256  rate in cents
+     */
     function getLatestPrice() public view returns (int256) {
         int256 price;
         (, price,,,) = priceFeed.latestRoundData();
-        return  price / 1e6;
+        return price / 1e6;
     }
 }
 

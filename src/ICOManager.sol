@@ -9,6 +9,9 @@ import {VestingToken} from "./VestingToken.sol";
 import {Bjustcoin} from "./Bjustcoin.sol";
 import {Oracle} from "./Oracle.sol";
 
+/**
+ * @notice enumeration of the types of tokenomics used
+ */
 enum TokenomicType {
     Strategic,
     Seed,
@@ -24,6 +27,9 @@ enum TokenomicType {
     Loyalty
 }
 
+/**
+ *  @notice enumeration of the stage ICO
+ */
 enum ICOStage {
     NoICO,
     Strategic,
@@ -34,6 +40,9 @@ enum ICOStage {
     EndICO
 }
 
+/**
+ *  @notice tokenomics settings
+ */
 struct TokenomicSetting {
     address stageToken; //адрес по которому хранится тип токена
     string nameToken; //наименование токена
@@ -47,15 +56,19 @@ struct TokenomicSetting {
 }
 
 /**
- * @author  Code Tesla Labs
  * @title   Manager ICO for BJustCoin
  * @dev     Implements ICO mechanisms
  * @notice  Implements ICO mechanisms
  */
 contract ICOManager is Ownable {
-    //BASIS_TOKENS_FOR_VESTING_TOKENS - наименьшее общее кратное для значений месяцев вестинга в токеномике
+    /**
+     * @dev the smallest common multiple for the values of the westing months in tokenomics
+     */
     uint256 private constant BASIS_TOKENS_FOR_VESTING_TOKENS = 5040;
     uint256 private constant MONTH = 365 days / 12;
+    /**
+     * @dev the default course value, in case the oracle returned an error
+     */
     uint256 private constant DEFAULT_RATE = 257673;
     uint256 private constant MIN_SOLD_VOLUME = 1000; //10$
     Oracle internal immutable _oracle;
@@ -393,7 +406,7 @@ contract ICOManager is Ownable {
 
     /**
      * @notice  get rate eth/usd
-     * @dev     get rate eth/usd from oracle
+     * @dev     get rate eth/usd from oracle. if the oracle did not return the value of the exchange rate, the default value is returned
      * @return  rate  .
      */
     function getRate() public view returns (uint256 rate) {
@@ -407,7 +420,6 @@ contract ICOManager is Ownable {
     //endregion
 
     //region Private
-
     /**
      * @notice  get tokenomic type
      * @dev     get tokenomic type
@@ -487,12 +499,10 @@ contract ICOManager is Ownable {
      */
     function buyToken(TokenomicSetting storage settings) private {
         uint256 rate = getRate();
-        //слишком маленький объем покупки
         if (msg.value <= MIN_SOLD_VOLUME * 1e18 / rate) {
             revert MinSoldError();
         }
         uint256 tokens = msg.value * rate / settings.price;
-        //недостаточно токенов для продажи
         if (tokens > settings.maxTokenCount - settings.soldTokenCount) {
             revert InsufficientFunds();
         }
