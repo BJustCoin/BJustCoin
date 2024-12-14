@@ -2,7 +2,7 @@
 pragma solidity ^0.8.20;
 
 import {Clones} from "@openzeppelin/contracts/proxy/Clones.sol";
-import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
+import { Ownable2Step, Ownable} from "@openzeppelin/contracts/access/Ownable2Step.sol";
 import {IVestingToken, Vesting} from "./IVestingToken.sol";
 
 /**
@@ -10,7 +10,7 @@ import {IVestingToken, Vesting} from "./IVestingToken.sol";
  * @notice The main task of a smart contract is to create instances of vestingTokens and set a vesting schedule on them
  * @dev
  */
-contract VestingManager is Ownable {
+contract VestingManager is Ownable2Step { 
     address private immutable _vestingImplementation;
 
     event CreateVestingToken(address indexed addressToken, string name, string symbol);

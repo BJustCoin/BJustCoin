@@ -2,14 +2,14 @@
 pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
+import { Ownable2Step, Ownable} from "@openzeppelin/contracts/access/Ownable2Step.sol";
 
 /**
  * @title   BJustCoin
  * @dev     Token ICO
  * @notice  Token ICO
  */
-contract Bjustcoin is ERC20, Ownable {
+contract Bjustcoin is ERC20, Ownable2Step {
     uint256 private constant INITIAL_SUPPLY = 100_000_000 * 1e18;
     mapping(address => bool) public blacklists;
 

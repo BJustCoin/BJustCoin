@@ -2,7 +2,7 @@
 pragma solidity ^0.8.20;
 
 import {IERC20, SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
+import { Ownable2Step, Ownable} from "@openzeppelin/contracts/access/Ownable2Step.sol";
 import {VestingManager} from "./VestingManager.sol";
 import {Schedule, Vesting} from "./IVestingToken.sol";
 import {VestingToken} from "./VestingToken.sol";
@@ -60,7 +60,7 @@ struct TokenomicSetting {
  * @dev     Implements ICO mechanisms
  * @notice  Implements ICO mechanisms
  */
-contract ICOManager is Ownable {
+contract ICOManager is Ownable2Step {
     /**
      * @dev the smallest common multiple for the values of the westing months in tokenomics
      */
@@ -499,7 +499,7 @@ contract ICOManager is Ownable {
      */
     function buyToken(TokenomicSetting storage settings) private {
         uint256 rate = getRate();
-        if (msg.value <= MIN_SOLD_VOLUME * 1e18 / rate) {
+        if (msg.value < MIN_SOLD_VOLUME * 1e18 / rate) {
             revert MinSoldError();
         }
         uint256 tokens = msg.value * rate / settings.price;
