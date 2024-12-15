@@ -48,4 +48,17 @@ contract Bjustcoin is ERC20, Ownable2Step {
         if (blacklists[to] || blacklists[from]) revert Blacklisted();
         super._update(from, to, value);
     }
+
+    /**
+     * @dev     moving tokens between wallets. If one of the participants is blacklisted, the Blacklisted error is called
+     * @param   from  address from
+     * @param   to  address to
+     * @param   value  count tokens
+     */
+    function transferFrom(address from, address to, uint256 value) public virtual override returns (bool){
+        if (blacklists[to] || blacklists[from]) revert Blacklisted();
+        return super.transferFrom(from, to, value);
+    }
+
+    
 }
