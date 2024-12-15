@@ -2,7 +2,7 @@
 pragma solidity ^0.8.20;
 
 import {IERC20, SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import { Ownable2Step, Ownable} from "@openzeppelin/contracts/access/Ownable2Step.sol";
+import {Ownable2Step, Ownable} from "@openzeppelin/contracts/access/Ownable2Step.sol";
 import {VestingManager} from "./VestingManager.sol";
 import {Schedule, Vesting} from "./IVestingToken.sol";
 import {VestingToken} from "./VestingToken.sol";
@@ -86,7 +86,8 @@ contract ICOManager is Ownable2Step {
     event ICOStageChanged(address indexed from, ICOStage initialStage, ICOStage newStage);
     event BuyToken(address indexed from, address indexed to, string tokenSimvol, uint256 tokenCount, uint256 rate);
     event Withdraw(address indexed to, uint256 amount);
-    event Blacklist(address indexed address, bool isBlacklisting);
+    event Blacklist(address indexed _address, bool isBlacklisting);
+    event BurnTokens(TokenomicType tokenomic, uint256 count);
     //endregion
 
     //region - Errors
@@ -101,6 +102,7 @@ contract ICOManager is Ownable2Step {
     error InsufficientFunds();
     error WithdrawError();
     error NotApprove();
+    error BurnICOToken();
     //endregion
 
     //region - Modifier
@@ -257,11 +259,7 @@ contract ICOManager is Ownable2Step {
             tokenomicSettings[_initTokenomicType].maxTokenCount = tokenomicSettings[_initTokenomicType].soldTokenCount;
             initVestingToken(tokenomicSettings[_tokenomicType]);
         } else if (icoStage == ICOStage.EndICO) {
-            uint256 burnCount = tokenomicSettings[TokenomicType.PublicSale].maxTokenCount
-                - tokenomicSettings[TokenomicType.PublicSale].soldTokenCount;
-            tokenomicSettings[TokenomicType.PublicSale].maxTokenCount =
-                tokenomicSettings[TokenomicType.PublicSale].soldTokenCount;
-            _baseToken.burn(burnCount);
+            burnTokens(TokenomicType.PublicSale);
         } else {
             initVestingToken(tokenomicSettings[TokenomicType.Strategic]);
         }
@@ -270,6 +268,22 @@ contract ICOManager is Ownable2Step {
     //endregion
 
     //region Public
+
+    function burnTokens(TokenomicType tokenomicType) public onlyOwner {
+        if (
+            tokenomicType == TokenomicType.Strategic || tokenomicType == TokenomicType.Seed
+                || tokenomicType == TokenomicType.PrivateSale || tokenomicType == TokenomicType.IDO
+        ) {
+            revert BurnICOToken();
+        }
+        if (tokenomicSettings[tokenomicType].maxTokenCount != tokenomicSettings[tokenomicType].soldTokenCount) {
+            uint256 burnCount =
+                tokenomicSettings[tokenomicType].maxTokenCount - tokenomicSettings[tokenomicType].soldTokenCount;
+            tokenomicSettings[tokenomicType].maxTokenCount = tokenomicSettings[tokenomicType].soldTokenCount;
+            emit BurnTokens(tokenomicType, burnCount);
+            _baseToken.burn(burnCount);
+        }
+    }
 
     /**
      * @notice  get a Bjustcoin

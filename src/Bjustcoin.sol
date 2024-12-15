@@ -2,7 +2,7 @@
 pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import { Ownable2Step, Ownable} from "@openzeppelin/contracts/access/Ownable2Step.sol";
+import {Ownable2Step, Ownable} from "@openzeppelin/contracts/access/Ownable2Step.sol";
 
 /**
  * @title   BJustCoin
@@ -13,7 +13,7 @@ contract Bjustcoin is ERC20, Ownable2Step {
     uint256 private constant INITIAL_SUPPLY = 100_000_000 * 1e18;
     mapping(address => bool) public blacklists;
 
-    event Blacklist(address indexed address, bool isBlacklisting);
+    event Blacklist(address indexed _address, bool isBlacklisting);
 
     error Blacklisted();
 
@@ -60,10 +60,8 @@ contract Bjustcoin is ERC20, Ownable2Step {
      * @param   to  address to
      * @param   value  count tokens
      */
-    function transferFrom(address from, address to, uint256 value) public virtual override returns (bool){
+    function transferFrom(address from, address to, uint256 value) public virtual override returns (bool) {
         if (blacklists[to] || blacklists[from]) revert Blacklisted();
         return super.transferFrom(from, to, value);
     }
-
-    
 }
