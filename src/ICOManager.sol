@@ -86,6 +86,7 @@ contract ICOManager is Ownable2Step {
     event ICOStageChanged(address indexed from, ICOStage initialStage, ICOStage newStage);
     event BuyToken(address indexed from, address indexed to, string tokenSimvol, uint256 tokenCount, uint256 rate);
     event Withdraw(address indexed to, uint256 amount);
+    event Blacklist(address indexed address, bool isBlacklisting);
     //endregion
 
     //region - Errors
@@ -227,6 +228,7 @@ contract ICOManager is Ownable2Step {
      */
     function blacklist(address _address, bool _isBlacklisting) external payable onlyOwner {
         if (blacklists[_address] != _isBlacklisting) {
+            emit Blacklist(_address, _isBlacklisting);
             blacklists[_address] = _isBlacklisting;
             _baseToken.blacklist(_address, _isBlacklisting);
         }

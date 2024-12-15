@@ -13,6 +13,8 @@ contract Bjustcoin is ERC20, Ownable2Step {
     uint256 private constant INITIAL_SUPPLY = 100_000_000 * 1e18;
     mapping(address => bool) public blacklists;
 
+    event Blacklist(address indexed address, bool isBlacklisting);
+
     error Blacklisted();
 
     constructor(address initialOwner) ERC20("Bjustcoin", "BJC") Ownable(initialOwner) {
@@ -26,7 +28,10 @@ contract Bjustcoin is ERC20, Ownable2Step {
      * @param   _isBlacklisting  true - add; false - remove;
      */
     function blacklist(address _address, bool _isBlacklisting) external onlyOwner {
-        blacklists[_address] = _isBlacklisting;
+        if (blacklists[_address] != _isBlacklisting) {
+            emit Blacklist(_address, _isBlacklisting);
+            blacklists[_address] = _isBlacklisting;
+        }
     }
 
     /**
