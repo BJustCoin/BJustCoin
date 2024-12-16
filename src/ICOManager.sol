@@ -80,11 +80,12 @@ contract ICOManager is Ownable2Step {
     mapping(TokenomicType => TokenomicSetting) private tokenomicSettings;
 
     //region - Events
-    /////////////////////
+    /////////////////////   
     //      Ewents     //
     /////////////////////
     event ICOStageChanged(address indexed from, ICOStage initialStage, ICOStage newStage);
     event BuyToken(address indexed from, address indexed to, string tokenSimvol, uint256 tokenCount, uint256 rate);
+    event TransferToken(address indexed from, address indexed to, string tokenSimvol, uint256 tokenCount);
     event Withdraw(address indexed to, uint256 amount);
     event Blacklist(address indexed _address, bool isBlacklisting);
     event BurnTokens(TokenomicType tokenomic, uint256 count);
@@ -206,6 +207,77 @@ contract ICOManager is Ownable2Step {
      */
     function buyLoyaltyToken() external payable notInBlackList(msg.sender) {
         buyToken(tokenomicSettings[TokenomicType.Loyalty]);
+    }
+
+    /**
+     * Transfer ICO token
+     * @param to recipient's address 
+     * @param amount number of tokens
+     */
+    function transferICOToken(address to, uint256 amount) external notInBlackList(to) onlyOwner {
+        if (icoStage == ICOStage.NoICO) revert ICONotStarted();
+        else if (icoStage == ICOStage.EndICO) revert ICOCompleted();
+        else if (icoStage == ICOStage.Strategic) transferStrategicToken(to, amount);
+        else if (icoStage == ICOStage.Seed) transferSeedToken(to, amount);
+        else if (icoStage == ICOStage.PrivateSale) transferPrivateSaleToken(to, amount);
+        else if (icoStage == ICOStage.IDO) transferIDOToken(to, amount);
+        else if (icoStage == ICOStage.PublicSale) transferPublicSaleToken(to, amount);
+    }
+
+    /**
+     * @notice  transfer of a Advisors token
+     * @dev     transfer of a Advisors token
+     */
+    function transferAdvisorsToken(address to, uint256 amount) external notInBlackList(to) onlyOwner {
+        transferToken(to, tokenomicSettings[TokenomicType.Advisors], amount);
+    }
+
+    /**
+     * @notice  transfer of a Team token
+     * @dev     transfer of a Team token
+     */
+    function transferTeamToken(address to, uint256 amount) external notInBlackList(to) onlyOwner {
+        transferToken(to, tokenomicSettings[TokenomicType.Team], amount);
+    }
+
+    /**
+     * @notice  transfer of a Future Team token
+     * @dev     transfer of a Future Team token
+     */
+    function transferFutureTeamToken(address to, uint256 amount) external notInBlackList(to) onlyOwner {
+        transferToken(to, tokenomicSettings[TokenomicType.FutureTeam], amount);
+    }
+
+    /**
+     * @notice  transfer of a Incentives token
+     * @dev     transfer of a Incentives token
+     */
+    function transferIncentivesToken(address to, uint256 amount) external notInBlackList(to) onlyOwner {
+        transferToken(to, tokenomicSettings[TokenomicType.Incentives], amount);
+    }
+
+    /**
+     * @notice  transfer of a Liquidity token
+     * @dev     transfer of a Liquidity token
+     */
+    function transferLiquidityToken(address to, uint256 amount) external notInBlackList(to) onlyOwner {
+        transferToken(to, tokenomicSettings[TokenomicType.Liquidity], amount);
+    }
+
+    /**
+     * @notice  transfer of a Ecosystem token
+     * @dev     transfer of a Ecosystem token
+     */
+    function transferEcosystemToken(address to, uint256 amount) external notInBlackList(to) onlyOwner {
+        transferToken(to, tokenomicSettings[TokenomicType.Ecosystem], amount);
+    }
+
+    /**
+     * @notice  transfer of a Loyalty token
+     * @dev     transfer of a Loyalty token
+     */
+    function transferLoyaltyToken(address to, uint256 amount) external notInBlackList(to) onlyOwner {
+        transferToken(to, tokenomicSettings[TokenomicType.Loyalty], amount);
     }
 
     /**
@@ -529,6 +601,22 @@ contract ICOManager is Ownable2Step {
     }
 
     /**
+     * Transfer token
+     * @param to recipient's address
+     * @param settings setting tokens for purchase
+     * @param amount number of tokens
+     */
+    function transferToken(address to, TokenomicSetting storage settings, uint256 amount) private {
+        if (amount > settings.maxTokenCount - settings.soldTokenCount) {
+            revert InsufficientFunds();
+        }
+        emit TransferToken(owner(), msg.sender, settings.simvolToken, amount);
+        if (!_baseToken.approve(settings.stageToken, amount)) revert NotApprove();
+        VestingToken(settings.stageToken).mint(msg.sender, amount);
+        settings.soldTokenCount += amount;
+    }
+
+    /**
      * @notice  purchase strategic token
      * @dev     purchase strategic token
      */
@@ -566,6 +654,46 @@ contract ICOManager is Ownable2Step {
      */
     function buyPublicSaleToken() private {
         buyToken(tokenomicSettings[TokenomicType.PublicSale]);
+    }
+
+    /**
+     * @notice  transfer strategic token
+     * @dev     transfer strategic token
+     */
+    function transferStrategicToken(address to, uint256 amount) private {
+        transferToken(to, tokenomicSettings[TokenomicType.Strategic], amount);
+    }
+
+    /**
+     * @notice  transfer seed token
+     * @dev     transfer seed token
+     */
+    function transferSeedToken(address to, uint256 amount) private {
+        transferToken(to, tokenomicSettings[TokenomicType.Seed], amount);
+    }
+
+    /**
+     * @notice  transfer private sale token
+     * @dev     transfer private sale token
+     */
+    function transferPrivateSaleToken(address to, uint256 amount) private {
+        transferToken(to, tokenomicSettings[TokenomicType.PrivateSale], amount);
+    }
+
+    /**
+     * @notice  transfer IDO token
+     * @dev     transfer IDO token
+     */
+    function transferIDOToken(address to, uint256 amount) private {
+        transferToken(to, tokenomicSettings[TokenomicType.IDO], amount);
+    }
+
+    /**
+     * @notice  transfer public sale token
+     * @dev     transfer public sale token
+     */
+    function transferPublicSaleToken(address to, uint256 amount) private {
+        transferToken(to, tokenomicSettings[TokenomicType.PublicSale], amount);
     }
     //endregion
 }
