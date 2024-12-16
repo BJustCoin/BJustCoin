@@ -35,6 +35,12 @@ contract ICOManagerICO_test is Test {
         testScriptPrivateSale = _icoManagerConst.InitPrivateSaleData();
         testScriptIDO = _icoManagerConst.InitIDOData();
         testScriptPublicSale = _icoManagerConst.InitPublicSaleData();
+
+        icoManager.whitelist(ALICE, TokenomicType.Strategic, true);
+        icoManager.whitelist(ALICE, TokenomicType.Seed, true);
+        icoManager.whitelist(ALICE, TokenomicType.IDO, true);
+        icoManager.whitelist(ALICE, TokenomicType.PrivateSale, true);
+        icoManager.whitelist(ALICE, TokenomicType.PublicSale, true);
     }
 
     function sendEth(uint256 buyUSD) private view returns (uint256) {
@@ -79,15 +85,62 @@ contract ICOManagerICO_test is Test {
         icoManager.buyICOToken{value: eth}();
     }
 
+    function test_ICOToken_transfer() public {
+        //strategic
+        icoManager.nextICOStage();
+        icoManager.transferICOToken(ALICE, 100*1e18);
+        assertEq(
+            VestingToken(icoManager.strategicToken()).balanceOf(ALICE) / 1e18,
+            100,
+            "(Transfer) strategicToken"
+        );
+        //seed
+        icoManager.nextICOStage();
+        icoManager.transferICOToken(ALICE, 200*1e18);
+        assertEq(
+            VestingToken(icoManager.seedToken()).balanceOf(ALICE) / 1e18,
+            200,
+            "(Transfer) seedToken"
+        );
+        //private sale
+        icoManager.nextICOStage();
+        icoManager.transferICOToken(ALICE, 300*1e18);
+        assertEq(
+            VestingToken(icoManager.privateSaleToken()).balanceOf(ALICE) / 1e18,
+            300,
+            "(Transfer) privateToken"
+        );
+        //ido
+        icoManager.nextICOStage();
+        icoManager.transferICOToken(ALICE, 400*1e18);
+        assertEq(
+            VestingToken(icoManager.idoToken()).balanceOf(ALICE) / 1e18,
+            400,
+            "(Transfer) idoToken"
+        );
+        //public sale
+        icoManager.nextICOStage();
+        icoManager.transferICOToken(ALICE, 500*1e18);
+        assertEq(
+            VestingToken(icoManager.publicSaleToken()).balanceOf(ALICE) / 1e18,
+            500,
+            "(Transfer) publicToken"
+        );
+        //end ICO
+        icoManager.nextICOStage();
+        
+
+    }
+
     function test_ICOToken_blacklist() public {
-        icoManager.blacklist(ALICE, true);
+        icoManager.blacklist(ALICE, true);        
         icoManager.nextICOStage();
         uint256 eth = sendEth(1500) + gas;
         vm.expectRevert(ICOManager.Blacklisted.selector);
         hoax(ALICE, 5 ether);
         icoManager.buyICOToken{value: eth}();
-
-        icoManager.blacklist(ALICE, false);
+        icoManager.blacklist(ALICE, false);                
+        vm.prank(ALICE);
         icoManager.buyICOToken{value: eth}();
     }
 

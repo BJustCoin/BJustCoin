@@ -77,6 +77,7 @@ contract ICOManager is Ownable2Step {
     Bjustcoin internal immutable _baseToken;
     ICOStage private icoStage;
     mapping(address => bool) public blacklists;
+    mapping(address => mapping(TokenomicType => bool)) public whitelists;
     mapping(TokenomicType => TokenomicSetting) private tokenomicSettings;
 
     //region - Events
@@ -88,6 +89,7 @@ contract ICOManager is Ownable2Step {
     event TransferToken(address indexed from, address indexed to, string tokenSimvol, uint256 tokenCount);
     event Withdraw(address indexed to, uint256 amount);
     event Blacklist(address indexed _address, bool isBlacklisting);
+    event WhiteList(address indexed _address, TokenomicType _tokenomicType, bool _isWhitelisting);
     event BurnTokens(TokenomicType tokenomic, uint256 count);
     //endregion
 
@@ -96,6 +98,7 @@ contract ICOManager is Ownable2Step {
     //      Errors     //
     /////////////////////
     error Blacklisted();
+    error NotInWhitelisted();
     error ICONotStarted();
     error ICOCompleted();
     error TokenAlreadyExist();
@@ -117,6 +120,11 @@ contract ICOManager is Ownable2Step {
      */
     modifier notInBlackList(address to) {
         if (blacklists[to]) revert Blacklisted();
+        _;
+    }
+
+    modifier inWhiteList(address to, TokenomicType _tokenomicType){               
+        if (!whitelists[to][_tokenomicType]) revert NotInWhitelisted();
         _;
     }
     //endregion
@@ -157,7 +165,7 @@ contract ICOManager is Ownable2Step {
      * @notice  purchase of a Advisors token
      * @dev     purchase of a Advisors token
      */
-    function buyAdvisorsToken() external payable notInBlackList(msg.sender) {
+    function buyAdvisorsToken() external payable notInBlackList(msg.sender) inWhiteList(msg.sender, TokenomicType.Advisors){
         buyToken(tokenomicSettings[TokenomicType.Advisors]);
     }
 
@@ -165,7 +173,7 @@ contract ICOManager is Ownable2Step {
      * @notice  purchase of a Team token
      * @dev     purchase of a Team token
      */
-    function buyTeamToken() external payable notInBlackList(msg.sender) {
+    function buyTeamToken() external payable notInBlackList(msg.sender) inWhiteList(msg.sender, TokenomicType.Team) {
         buyToken(tokenomicSettings[TokenomicType.Team]);
     }
 
@@ -173,7 +181,7 @@ contract ICOManager is Ownable2Step {
      * @notice  purchase of a Future Team token
      * @dev     purchase of a Future Team token
      */
-    function buyFutureTeamToken() external payable notInBlackList(msg.sender) {
+    function buyFutureTeamToken() external payable notInBlackList(msg.sender) inWhiteList(msg.sender, TokenomicType.FutureTeam) {
         buyToken(tokenomicSettings[TokenomicType.FutureTeam]);
     }
 
@@ -181,7 +189,7 @@ contract ICOManager is Ownable2Step {
      * @notice  purchase of a Incentives token
      * @dev     purchase of a Incentives token
      */
-    function buyIncentivesToken() external payable notInBlackList(msg.sender) {
+    function buyIncentivesToken() external payable notInBlackList(msg.sender) inWhiteList(msg.sender, TokenomicType.Incentives) {
         buyToken(tokenomicSettings[TokenomicType.Incentives]);
     }
 
@@ -189,7 +197,7 @@ contract ICOManager is Ownable2Step {
      * @notice  purchase of a Liquidity token
      * @dev     purchase of a Liquidity token
      */
-    function buyLiquidityToken() external payable notInBlackList(msg.sender) {
+    function buyLiquidityToken() external payable notInBlackList(msg.sender) inWhiteList(msg.sender, TokenomicType.Liquidity){
         buyToken(tokenomicSettings[TokenomicType.Liquidity]);
     }
 
@@ -197,7 +205,7 @@ contract ICOManager is Ownable2Step {
      * @notice  purchase of a Ecosystem token
      * @dev     purchase of a Ecosystem token
      */
-    function buyEcosystemToken() external payable notInBlackList(msg.sender) {
+    function buyEcosystemToken() external payable notInBlackList(msg.sender) inWhiteList(msg.sender, TokenomicType.Ecosystem){
         buyToken(tokenomicSettings[TokenomicType.Ecosystem]);
     }
 
@@ -205,7 +213,7 @@ contract ICOManager is Ownable2Step {
      * @notice  purchase of a Loyalty token
      * @dev     purchase of a Loyalty token
      */
-    function buyLoyaltyToken() external payable notInBlackList(msg.sender) {
+    function buyLoyaltyToken() external payable notInBlackList(msg.sender) inWhiteList(msg.sender, TokenomicType.Loyalty){
         buyToken(tokenomicSettings[TokenomicType.Loyalty]);
     }
 
@@ -305,6 +313,13 @@ contract ICOManager is Ownable2Step {
             emit Blacklist(_address, _isBlacklisting);
             blacklists[_address] = _isBlacklisting;
             _baseToken.blacklist(_address, _isBlacklisting);
+        }
+    }
+
+    function whitelist(address _address, TokenomicType _tokenomicType, bool _isWhitelisting) external payable onlyOwner{                
+        if (whitelists[_address][_tokenomicType] != _isWhitelisting){
+            emit WhiteList(_address, _tokenomicType, _isWhitelisting);
+            whitelists[_address][_tokenomicType] = _isWhitelisting;            
         }
     }
 
@@ -610,9 +625,9 @@ contract ICOManager is Ownable2Step {
         if (amount > settings.maxTokenCount - settings.soldTokenCount) {
             revert InsufficientFunds();
         }
-        emit TransferToken(owner(), msg.sender, settings.simvolToken, amount);
+        emit TransferToken(owner(), to, settings.simvolToken, amount);
         if (!_baseToken.approve(settings.stageToken, amount)) revert NotApprove();
-        VestingToken(settings.stageToken).mint(msg.sender, amount);
+        VestingToken(settings.stageToken).mint(to, amount);
         settings.soldTokenCount += amount;
     }
 
@@ -620,7 +635,7 @@ contract ICOManager is Ownable2Step {
      * @notice  purchase strategic token
      * @dev     purchase strategic token
      */
-    function buyStrategicToken() private {
+    function buyStrategicToken() private inWhiteList(msg.sender, TokenomicType.Strategic) {
         buyToken(tokenomicSettings[TokenomicType.Strategic]);
     }
 
@@ -628,7 +643,7 @@ contract ICOManager is Ownable2Step {
      * @notice  purchase seed token
      * @dev     purchase seed token
      */
-    function buySeedToken() private {
+    function buySeedToken() private inWhiteList(msg.sender, TokenomicType.Seed){
         buyToken(tokenomicSettings[TokenomicType.Seed]);
     }
 
@@ -636,7 +651,7 @@ contract ICOManager is Ownable2Step {
      * @notice  purchase private sale token
      * @dev     purchase private sale token
      */
-    function buyPrivateSaleToken() private {
+    function buyPrivateSaleToken() private inWhiteList(msg.sender, TokenomicType.PrivateSale) {
         buyToken(tokenomicSettings[TokenomicType.PrivateSale]);
     }
 
@@ -644,7 +659,7 @@ contract ICOManager is Ownable2Step {
      * @notice  purchase IDO token
      * @dev     purchase IDO token
      */
-    function buyIDOToken() private {
+    function buyIDOToken() private inWhiteList(msg.sender, TokenomicType.IDO){
         buyToken(tokenomicSettings[TokenomicType.IDO]);
     }
 

@@ -34,6 +34,7 @@ contract ICOManagerLoyalty_test is Test {
     //Покупка токенов меньше минимальной покупки
     function test_LoyaltyToken_minSoldVolume() public {
         uint256 sendEth = getEthCount(MIN_SOLD_VOLUME - 1);
+        icoManager.whitelist(ALICE, TokenomicType.Loyalty, true);
         startHoax(ALICE, 1 ether);
         vm.expectRevert(ICOManager.MinSoldError.selector);
         icoManager.buyLoyaltyToken{value: sendEth + gas}();
@@ -42,14 +43,246 @@ contract ICOManagerLoyalty_test is Test {
     //Покупка токенов, для случая когда их недостаточно (цена по 1$ за токен)
     function test_LoyaltyToken_maxusd() public {
         uint256 sendEth = getEthCount(testScript.startParams.maxTokenCount) / 1e16;
+        icoManager.whitelist(ALICE, TokenomicType.Loyalty, true);
         console.log("sendEth = ", sendEth);
         startHoax(ALICE, 10000 ether);
         vm.expectRevert(ICOManager.InsufficientFunds.selector);
         icoManager.buyLoyaltyToken{value: sendEth + gas}();
     }
 
+
+    function test_LoyaltyToken_Transfer() public {
+        icoManager.transferLoyaltyToken(ALICE, testScript.buyToken.stageTokenBalance*1e18);
+        vm.startPrank(ALICE);
+        
+        /**
+         * покупка
+         */
+        assertEq(
+            VestingToken(icoManager.loyaltyToken()).balanceOf(ALICE) / 1e18,
+            testScript.buyToken.stageTokenBalance,
+            "(Transfer) LoyaltyToken "
+        );
+        assertEq(
+            VestingToken(icoManager.loyaltyToken()).availableBalanceOf(ALICE) / 1e18,
+            testScript.buyToken.availableBalance,
+            "(Transfer) BJC available"
+        );
+        assertEq(
+            ERC20(icoManager.getBaseToken()).balanceOf(ALICE) / 1e18, testScript.buyToken.bjcBalance, "(Transfer) BJC tokens"
+        );
+        vm.warp(block.timestamp + testScript.startParams.cliffMonth * 365 days / 12);
+        uint256 cliffTimeStamp = block.timestamp;
+
+        /**
+         * cliff
+         */
+        assertEq(
+            VestingToken(icoManager.loyaltyToken()).balanceOf(ALICE) / 1e18,
+            testScript.endLess.stageTokenBalance,
+            "(Less) LoyaltyToken purchased"
+        );
+        assertEq(
+            VestingToken(icoManager.loyaltyToken()).availableBalanceOf(ALICE) / 1e18,
+            testScript.endLess.availableBalance,
+            "(Less) BJC available"
+        );
+        assertEq(
+            ERC20(icoManager.getBaseToken()).balanceOf(ALICE) / 1e18, testScript.endLess.bjcBalance, "(Less) BJC tokens"
+        );
+        if (VestingToken(icoManager.loyaltyToken()).availableBalanceOf(ALICE) > 0) {
+            VestingToken(icoManager.loyaltyToken()).claim();
+        }
+        /**
+         * Cliff claim
+         */
+        assertEq(
+            VestingToken(icoManager.loyaltyToken()).balanceOf(ALICE) / 1e18,
+            testScript.endLessClaim.stageTokenBalance,
+            "(Less claim) LoyaltyToken purchased"
+        );
+        assertEq(
+            VestingToken(icoManager.loyaltyToken()).availableBalanceOf(ALICE),
+            testScript.endLessClaim.availableBalance,
+            "(Less claim) BJC available"
+        );
+        assertEq(
+            ERC20(icoManager.getBaseToken()).balanceOf(ALICE) / 1e18,
+            testScript.endLessClaim.bjcBalance,
+            "(Less claim) BJC tokens"
+        );
+        vm.warp(cliffTimeStamp + testScript.startParams.vestingPeriod033);
+        /**
+         * vesting 0.33
+         */
+        assertEq(
+            VestingToken(icoManager.loyaltyToken()).balanceOf(ALICE) / 1e18,
+            testScript.vesting033.stageTokenBalance,
+            "(Vesting 0,33) LoyaltyToken purchased"
+        );
+        assertEq(
+            VestingToken(icoManager.loyaltyToken()).availableBalanceOf(ALICE) / 1e18,
+            testScript.vesting033.availableBalance,
+            "(Vesting 0,33) BJC available"
+        );
+        assertEq(
+            ERC20(icoManager.getBaseToken()).balanceOf(ALICE) / 1e18,
+            testScript.vesting033.bjcBalance,
+            "(Vesting 0,33) BJC tokens"
+        );
+        if (VestingToken(icoManager.loyaltyToken()).availableBalanceOf(ALICE) > 0) {
+            VestingToken(icoManager.loyaltyToken()).claim();
+        }
+        /**
+         * vesting 0.33 claim
+         */
+        assertEq(
+            VestingToken(icoManager.loyaltyToken()).balanceOf(ALICE) / 1e18,
+            testScript.vestingClaim033.stageTokenBalance,
+            "(Vesting 0,33 claim) LoyaltyToken purchased"
+        );
+        assertEq(
+            VestingToken(icoManager.loyaltyToken()).availableBalanceOf(ALICE) / 1e18,
+            testScript.vestingClaim033.availableBalance,
+            "(Vesting 0,33 claim) BJC available"
+        );
+        assertEq(
+            ERC20(icoManager.getBaseToken()).balanceOf(ALICE) / 1e18,
+            testScript.vestingClaim033.bjcBalance,
+            "(Vesting 0,33 claim) BJC tokens"
+        );
+        vm.warp(cliffTimeStamp + testScript.startParams.vestingPeriod050);
+        /**
+         * vesting 0.50
+         */
+        assertEq(
+            VestingToken(icoManager.loyaltyToken()).balanceOf(ALICE) / 1e18,
+            testScript.vesting050.stageTokenBalance,
+            "(Vesting 0,5) LoyaltyToken purchased"
+        );
+        assertEq(
+            VestingToken(icoManager.loyaltyToken()).availableBalanceOf(ALICE) / 1e18,
+            testScript.vesting050.availableBalance,
+            "(Vesting 0,5) BJC available"
+        );
+        assertEq(
+            ERC20(icoManager.getBaseToken()).balanceOf(ALICE) / 1e18,
+            testScript.vesting050.bjcBalance,
+            "(Vesting 0,5) BJC tokens"
+        );
+        if (VestingToken(icoManager.loyaltyToken()).availableBalanceOf(ALICE) > 0) {
+            VestingToken(icoManager.loyaltyToken()).claim();
+        }
+        /**
+         * vesting 0.50 claim
+         */
+        assertEq(
+            VestingToken(icoManager.loyaltyToken()).balanceOf(ALICE) / 1e18,
+            testScript.vestingClaim050.stageTokenBalance,
+            "(Vesting 0,5 claim) LoyaltyToken purchased"
+        );
+        assertEq(
+            VestingToken(icoManager.loyaltyToken()).availableBalanceOf(ALICE) / 1e18,
+            testScript.vestingClaim050.availableBalance,
+            "(Vesting 0,5 claim) BJC available"
+        );
+        assertEq(
+            ERC20(icoManager.getBaseToken()).balanceOf(ALICE) / 1e18,
+            testScript.vestingClaim050.bjcBalance,
+            "(Vesting 0,5 claim) BJC tokens"
+        );
+
+        vm.warp(cliffTimeStamp + testScript.startParams.vestingPeriod067);
+        /**
+         * vesting 0.67
+         */
+        assertEq(
+            VestingToken(icoManager.loyaltyToken()).balanceOf(ALICE) / 1e18,
+            testScript.vesting067.stageTokenBalance,
+            "(Vesting 0,67) LoyaltyToken purchased"
+        );
+        assertEq(
+            VestingToken(icoManager.loyaltyToken()).availableBalanceOf(ALICE) / 1e18,
+            testScript.vesting067.availableBalance,
+            "(Vesting 0,67) BJC available"
+        );
+        assertEq(
+            ERC20(icoManager.getBaseToken()).balanceOf(ALICE) / 1e18,
+            testScript.vesting067.bjcBalance,
+            "(Vesting 0,67) BJC tokens"
+        );
+
+        if (VestingToken(icoManager.loyaltyToken()).availableBalanceOf(ALICE) > 0) {
+            VestingToken(icoManager.loyaltyToken()).claim();
+        }
+        /**
+         * vesting 0.67 claim
+         */
+        assertEq(
+            VestingToken(icoManager.loyaltyToken()).balanceOf(ALICE) / 1e18,
+            testScript.vestingClaim067.stageTokenBalance,
+            "(Vesting 0,67 claim) LoyaltyToken purchased"
+        );
+        assertEq(
+            VestingToken(icoManager.loyaltyToken()).availableBalanceOf(ALICE) / 1e18,
+            testScript.vestingClaim067.availableBalance,
+            "(Vesting 0,67 claim) BJC available"
+        );
+        assertEq(
+            ERC20(icoManager.getBaseToken()).balanceOf(ALICE) / 1e18,
+            testScript.vestingClaim067.bjcBalance,
+            "(Vesting 0,67 claim) BJC tokens"
+        );
+        vm.warp(cliffTimeStamp + testScript.startParams.vestingMonth * 365 days / 12);
+
+        /**
+         * vesting
+         */
+        assertEq(
+            VestingToken(icoManager.loyaltyToken()).balanceOf(ALICE) / 1e18,
+            testScript.endVesting.stageTokenBalance,
+            "(Vesting end) LoyaltyToken purchased"
+        );
+        assertEq(
+            VestingToken(icoManager.loyaltyToken()).availableBalanceOf(ALICE) / 1e18,
+            testScript.endVesting.availableBalance,
+            "(Vesting end) BJC available"
+        );
+        assertEq(
+            ERC20(icoManager.getBaseToken()).balanceOf(ALICE) / 1e18,
+            testScript.endVesting.bjcBalance,
+            "(Vesting end) BJC tokens"
+        );
+
+        if (VestingToken(icoManager.loyaltyToken()).availableBalanceOf(ALICE) > 0) {
+            VestingToken(icoManager.loyaltyToken()).claim();
+        }
+
+        /**
+         * vesting claim
+         */
+        assertEq(
+            VestingToken(icoManager.loyaltyToken()).balanceOf(ALICE) / 1e18,
+            testScript.endVestingClaim.stageTokenBalance,
+            "(Vesting end claim) LoyaltyToken purchased"
+        );
+        assertEq(
+            VestingToken(icoManager.loyaltyToken()).availableBalanceOf(ALICE) / 1e18,
+            testScript.endVestingClaim.availableBalance,
+            "(Vesting end claim) BJC available"
+        );
+        assertEq(
+            ERC20(icoManager.getBaseToken()).balanceOf(ALICE) / 1e18,
+            testScript.endVestingClaim.bjcBalance,
+            "(Vesting end claim) BJC tokens"
+        );
+
+        vm.stopPrank();
+    }
+
     function test_LoyaltyToken() public {
         uint256 sendEth = getEthCount(testScript.startParams.buyUSD);
+        icoManager.whitelist(ALICE, TokenomicType.Loyalty, true);
         startHoax(ALICE, 1 ether);
         icoManager.buyLoyaltyToken{value: sendEth + gas}();
 
