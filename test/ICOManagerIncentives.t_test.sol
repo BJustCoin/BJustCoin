@@ -51,8 +51,7 @@ contract ICOManagerIncentives_test is Test {
     }
 
     function test_IncentivesToken_Transfer() public {
-
-        icoManager.transferIncentivesToken(ALICE, testScript.buyToken.stageTokenBalance*1e18);
+        icoManager.transferIncentivesToken(ALICE, testScript.buyToken.stageTokenBalance * 1e18);
         vm.startPrank(ALICE);
 
         /**
@@ -143,12 +142,12 @@ contract ICOManagerIncentives_test is Test {
         );
         assertEq(
             VestingToken(icoManager.incentivesToken()).availableBalanceOf(ALICE) / 1e18,
-            testScript.vestingClaim033.availableBalance ,
+            testScript.vestingClaim033.availableBalance,
             "(Vesting 0,33 claim) BJC available"
         );
         assertEq(
             ERC20(icoManager.getBaseToken()).balanceOf(ALICE) / 1e18,
-            testScript.vestingClaim033.bjcBalance-1,
+            testScript.vestingClaim033.bjcBalance - 1,
             "(Vesting 0,33 claim) BJC tokens"
         );
         vm.warp(cliffTimeStamp + testScript.startParams.vestingPeriod050);
@@ -167,7 +166,7 @@ contract ICOManagerIncentives_test is Test {
         );
         assertEq(
             ERC20(icoManager.getBaseToken()).balanceOf(ALICE) / 1e18,
-            testScript.vesting050.bjcBalance- 1,
+            testScript.vesting050.bjcBalance - 1,
             "(Vesting 0,5) BJC tokens"
         );
         if (VestingToken(icoManager.incentivesToken()).availableBalanceOf(ALICE) > 0) {

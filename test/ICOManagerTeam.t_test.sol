@@ -51,7 +51,7 @@ contract ICOManagerTeam_test is Test {
     }
 
     function test_TeamToken_Transfer() public {
-        icoManager.transferTeamToken(ALICE, testScript.buyToken.stageTokenBalance*1e18);
+        icoManager.transferTeamToken(ALICE, testScript.buyToken.stageTokenBalance * 1e18);
         vm.startPrank(ALICE);
         /**
          * покупка
@@ -67,7 +67,9 @@ contract ICOManagerTeam_test is Test {
             "(Transfer) BJC available"
         );
         assertEq(
-            ERC20(icoManager.getBaseToken()).balanceOf(ALICE) / 1e18, testScript.buyToken.bjcBalance, "(Transfer) BJC tokens"
+            ERC20(icoManager.getBaseToken()).balanceOf(ALICE) / 1e18,
+            testScript.buyToken.bjcBalance,
+            "(Transfer) BJC tokens"
         );
         vm.warp(block.timestamp + testScript.startParams.cliffMonth * 365 days / 12);
         uint256 cliffTimeStamp = block.timestamp;

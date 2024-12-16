@@ -50,9 +50,8 @@ contract ICOManagerAdvisors_test is Test {
         icoManager.buyAdvisorsToken{value: sendEth + gas}();
     }
 
-
     function test_AdvisorsToken_Transfer() public {
-        icoManager.transferAdvisorsToken(ALICE, testScript.buyToken.stageTokenBalance*1e18);
+        icoManager.transferAdvisorsToken(ALICE, testScript.buyToken.stageTokenBalance * 1e18);
         vm.startPrank(ALICE);
         /**
          * покупка
@@ -116,7 +115,7 @@ contract ICOManagerAdvisors_test is Test {
          */
         assertEq(
             VestingToken(icoManager.advisorsToken()).balanceOf(ALICE) / 1e18,
-            testScript.vesting033.stageTokenBalance ,
+            testScript.vesting033.stageTokenBalance,
             "(Vesting 0,33) advisorsToken "
         );
         assertEq(

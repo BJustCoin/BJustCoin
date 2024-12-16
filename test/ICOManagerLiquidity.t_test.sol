@@ -51,11 +51,9 @@ contract ICOManagerLiquidity_test is Test {
     }
 
     function test_LiquidityToken_Transfer() public {
-
-        icoManager.transferLiquidityToken(ALICE, testScript.buyToken.stageTokenBalance*1e18);
+        icoManager.transferLiquidityToken(ALICE, testScript.buyToken.stageTokenBalance * 1e18);
         vm.startPrank(ALICE);
 
-        
         /**
          * покупка
          */

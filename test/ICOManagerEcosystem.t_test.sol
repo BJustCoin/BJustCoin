@@ -51,7 +51,7 @@ contract ICOManagerEcosystem_test is Test {
     }
 
     function test_EcosystemToken_Transfer() public {
-        icoManager.transferEcosystemToken(ALICE, testScript.buyToken.stageTokenBalance*1e18);
+        icoManager.transferEcosystemToken(ALICE, testScript.buyToken.stageTokenBalance * 1e18);
         vm.startPrank(ALICE);
         /**
          * покупка

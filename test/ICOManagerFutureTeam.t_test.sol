@@ -51,7 +51,7 @@ contract ICOManagerFutureTeam_test is Test {
     }
 
     function test_FutureTeamToken_Transfer() public {
-        icoManager.transferFutureTeamToken(ALICE, testScript.buyToken.stageTokenBalance*1e18);
+        icoManager.transferFutureTeamToken(ALICE, testScript.buyToken.stageTokenBalance * 1e18);
         vm.startPrank(ALICE);
 
         /**
@@ -278,7 +278,6 @@ contract ICOManagerFutureTeam_test is Test {
 
         vm.stopPrank();
     }
-
 
     function test_FutureTeamToken() public {
         uint256 sendEth = getEthCount(testScript.startParams.buyUSD);
