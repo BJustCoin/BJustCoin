@@ -66,16 +66,16 @@ contract ICOManager is Ownable2Step {
      */
     uint256 private constant BASIS_TOKENS_FOR_VESTING_TOKENS = 5040;
     uint256 private constant MONTH = 365 days / 12;
-    /**
-     * @dev the default course value, in case the oracle returned an error
-     */
-    uint256 private constant DEFAULT_RATE = 257673;
     uint256 private constant MIN_SOLD_VOLUME = 1000; //10$
     Oracle internal immutable _oracle;
     VestingToken internal immutable _vestingTokenImpl;
     VestingManager internal immutable _vestingManager;
     Bjustcoin internal immutable _baseToken;
     ICOStage private icoStage;
+    /**
+     * @dev the default course value, in case the oracle returned an error
+     */
+    uint256 private defaultRate = 257673;
     mapping(address => bool) public blacklists;
     mapping(address => mapping(TokenomicType => bool)) public whitelists;
     mapping(TokenomicType => TokenomicSetting) private tokenomicSettings;
@@ -107,6 +107,7 @@ contract ICOManager is Ownable2Step {
     error WithdrawError();
     error NotApprove();
     error BurnICOToken();
+    error SetDefaultRateByZero();
     //endregion
 
     //region - Modifier
@@ -357,6 +358,11 @@ contract ICOManager is Ownable2Step {
         }
     }
 
+    function setDefaultRate(uint256 value) external payable onlyOwner {
+        if (value == 0) revert SetDefaultRateByZero();
+        defaultRate = value;
+    }
+
     /**
      * @notice  Moving the ICO to the next stage
      * @dev     Moving the ICO to the next stage
@@ -547,11 +553,15 @@ contract ICOManager is Ownable2Step {
      * @return  rate  .
      */
     function getRate() public view returns (uint256 rate) {
-        try _oracle.getLatestPrice() returns (int256 _rate) {
+        try _oracle.getLatestPrice(defaultRate) returns (int256 _rate) {
             return uint256(_rate);
         } catch {
-            return DEFAULT_RATE;
+            return defaultRate;
         }
+    }
+
+    function getDefaultRate() public view returns (uint256) {
+        return defaultRate;
     }
 
     //endregion

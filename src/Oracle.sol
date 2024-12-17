@@ -15,9 +15,16 @@ contract Oracle {
      * @notice  usd/eth exchange rate in cents
      * @return  int256  rate in cents
      */
-    function getLatestPrice() public view returns (int256) {
+    function getLatestPrice(uint256 defaultRate) public view returns (int256) {
         int256 price;
-        (, price,,,) = priceFeed.latestRoundData();
+        uint256 updatedAt;
+        uint256 staleTime = 3600;
+        (, price,, updatedAt,) = priceFeed.latestRoundData();
+        uint256 deltaRate = defaultRate / 5; //20%
+        if (uint256(price) < defaultRate - deltaRate || uint256(price) > defaultRate + deltaRate) {
+            revert GetLastPriceError();
+        }
+        if (updatedAt < block.timestamp - staleTime) revert GetLastPriceError();
         return price / 1e6;
     }
 }
