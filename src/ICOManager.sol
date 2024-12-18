@@ -72,6 +72,7 @@ contract ICOManager is Ownable2Step {
     VestingManager internal immutable _vestingManager;
     Bjustcoin internal immutable _baseToken;
     ICOStage private icoStage;
+    bool private isPauseTrading = false;
     /**
      * @dev the default course value, in case the oracle returned an error
      */
@@ -91,6 +92,7 @@ contract ICOManager is Ownable2Step {
     event Blacklist(address indexed _address, bool isBlacklisting);
     event WhiteList(address indexed _address, TokenomicType _tokenomicType, bool _isWhitelisting);
     event BurnTokens(TokenomicType tokenomic, uint256 count);
+    event PauseTrading(bool isPause);
     //endregion
 
     //region - Errors
@@ -108,6 +110,7 @@ contract ICOManager is Ownable2Step {
     error NotApprove();
     error BurnICOToken();
     error SetDefaultRateByZero();
+    error PausedTrading();
     //endregion
 
     //region - Modifier
@@ -124,8 +127,21 @@ contract ICOManager is Ownable2Step {
         _;
     }
 
+    /**
+     * @notice  we check whether the address is whitelisted for a given type tokenomic
+     * @dev     we check whether the address is whitelisted for a given type tokenomic
+     */
     modifier inWhiteList(address to, TokenomicType _tokenomicType) {
         if (!whitelists[to][_tokenomicType]) revert NotInWhitelisted();
+        _;
+    }
+
+    /**
+     * @notice  we are checking whether there is a sales pause
+     * @dev     we are checking whether there is a sales pause
+     */
+    modifier notPaused() {
+        if (isPauseTrading) revert PausedTrading();
         _;
     }
     //endregion
@@ -152,7 +168,7 @@ contract ICOManager is Ownable2Step {
      * @notice  purchase of an ICO stage token
      * @dev     purchase stage token. The type of token depends on the ICO stage
      */
-    function buyICOToken() external payable notInBlackList(msg.sender) {
+    function buyICOToken() external payable notPaused notInBlackList(msg.sender) {
         if (icoStage == ICOStage.NoICO) revert ICONotStarted();
         else if (icoStage == ICOStage.EndICO) revert ICOCompleted();
         else if (icoStage == ICOStage.Strategic) buyStrategicToken();
@@ -169,6 +185,7 @@ contract ICOManager is Ownable2Step {
     function buyAdvisorsToken()
         external
         payable
+        notPaused
         notInBlackList(msg.sender)
         inWhiteList(msg.sender, TokenomicType.Advisors)
     {
@@ -179,7 +196,13 @@ contract ICOManager is Ownable2Step {
      * @notice  purchase of a Team token
      * @dev     purchase of a Team token
      */
-    function buyTeamToken() external payable notInBlackList(msg.sender) inWhiteList(msg.sender, TokenomicType.Team) {
+    function buyTeamToken()
+        external
+        payable
+        notPaused
+        notInBlackList(msg.sender)
+        inWhiteList(msg.sender, TokenomicType.Team)
+    {
         buyToken(tokenomicSettings[TokenomicType.Team]);
     }
 
@@ -190,6 +213,7 @@ contract ICOManager is Ownable2Step {
     function buyFutureTeamToken()
         external
         payable
+        notPaused
         notInBlackList(msg.sender)
         inWhiteList(msg.sender, TokenomicType.FutureTeam)
     {
@@ -203,6 +227,7 @@ contract ICOManager is Ownable2Step {
     function buyIncentivesToken()
         external
         payable
+        notPaused
         notInBlackList(msg.sender)
         inWhiteList(msg.sender, TokenomicType.Incentives)
     {
@@ -216,6 +241,7 @@ contract ICOManager is Ownable2Step {
     function buyLiquidityToken()
         external
         payable
+        notPaused
         notInBlackList(msg.sender)
         inWhiteList(msg.sender, TokenomicType.Liquidity)
     {
@@ -229,6 +255,7 @@ contract ICOManager is Ownable2Step {
     function buyEcosystemToken()
         external
         payable
+        notPaused
         notInBlackList(msg.sender)
         inWhiteList(msg.sender, TokenomicType.Ecosystem)
     {
@@ -242,6 +269,7 @@ contract ICOManager is Ownable2Step {
     function buyLoyaltyToken()
         external
         payable
+        notPaused
         notInBlackList(msg.sender)
         inWhiteList(msg.sender, TokenomicType.Loyalty)
     {
@@ -253,7 +281,7 @@ contract ICOManager is Ownable2Step {
      * @param to recipient's address
      * @param amount number of tokens
      */
-    function transferICOToken(address to, uint256 amount) external notInBlackList(to) onlyOwner {
+    function transferICOToken(address to, uint256 amount) external notPaused notInBlackList(to) onlyOwner {
         if (icoStage == ICOStage.NoICO) revert ICONotStarted();
         else if (icoStage == ICOStage.EndICO) revert ICOCompleted();
         else if (icoStage == ICOStage.Strategic) transferStrategicToken(to, amount);
@@ -267,7 +295,7 @@ contract ICOManager is Ownable2Step {
      * @notice  transfer of a Advisors token
      * @dev     transfer of a Advisors token
      */
-    function transferAdvisorsToken(address to, uint256 amount) external notInBlackList(to) onlyOwner {
+    function transferAdvisorsToken(address to, uint256 amount) external notPaused notInBlackList(to) onlyOwner {
         transferToken(to, tokenomicSettings[TokenomicType.Advisors], amount);
     }
 
@@ -275,7 +303,7 @@ contract ICOManager is Ownable2Step {
      * @notice  transfer of a Team token
      * @dev     transfer of a Team token
      */
-    function transferTeamToken(address to, uint256 amount) external notInBlackList(to) onlyOwner {
+    function transferTeamToken(address to, uint256 amount) external notPaused notInBlackList(to) onlyOwner {
         transferToken(to, tokenomicSettings[TokenomicType.Team], amount);
     }
 
@@ -283,7 +311,7 @@ contract ICOManager is Ownable2Step {
      * @notice  transfer of a Future Team token
      * @dev     transfer of a Future Team token
      */
-    function transferFutureTeamToken(address to, uint256 amount) external notInBlackList(to) onlyOwner {
+    function transferFutureTeamToken(address to, uint256 amount) external notPaused notInBlackList(to) onlyOwner {
         transferToken(to, tokenomicSettings[TokenomicType.FutureTeam], amount);
     }
 
@@ -291,7 +319,7 @@ contract ICOManager is Ownable2Step {
      * @notice  transfer of a Incentives token
      * @dev     transfer of a Incentives token
      */
-    function transferIncentivesToken(address to, uint256 amount) external notInBlackList(to) onlyOwner {
+    function transferIncentivesToken(address to, uint256 amount) external notPaused notInBlackList(to) onlyOwner {
         transferToken(to, tokenomicSettings[TokenomicType.Incentives], amount);
     }
 
@@ -299,7 +327,7 @@ contract ICOManager is Ownable2Step {
      * @notice  transfer of a Liquidity token
      * @dev     transfer of a Liquidity token
      */
-    function transferLiquidityToken(address to, uint256 amount) external notInBlackList(to) onlyOwner {
+    function transferLiquidityToken(address to, uint256 amount) external notPaused notInBlackList(to) onlyOwner {
         transferToken(to, tokenomicSettings[TokenomicType.Liquidity], amount);
     }
 
@@ -307,7 +335,7 @@ contract ICOManager is Ownable2Step {
      * @notice  transfer of a Ecosystem token
      * @dev     transfer of a Ecosystem token
      */
-    function transferEcosystemToken(address to, uint256 amount) external notInBlackList(to) onlyOwner {
+    function transferEcosystemToken(address to, uint256 amount) external notPaused notInBlackList(to) onlyOwner {
         transferToken(to, tokenomicSettings[TokenomicType.Ecosystem], amount);
     }
 
@@ -315,7 +343,7 @@ contract ICOManager is Ownable2Step {
      * @notice  transfer of a Loyalty token
      * @dev     transfer of a Loyalty token
      */
-    function transferLoyaltyToken(address to, uint256 amount) external notInBlackList(to) onlyOwner {
+    function transferLoyaltyToken(address to, uint256 amount) external notPaused notInBlackList(to) onlyOwner {
         transferToken(to, tokenomicSettings[TokenomicType.Loyalty], amount);
     }
 
@@ -358,9 +386,23 @@ contract ICOManager is Ownable2Step {
         }
     }
 
+    /**
+     * set new default rate
+     * @param value new default rate
+     */
     function setDefaultRate(uint256 value) external payable onlyOwner {
         if (value == 0) revert SetDefaultRateByZero();
         defaultRate = value;
+    }
+
+    /**
+     * setting and taking off the pause traiding
+     */
+    function setPauseTraiding(bool value) external payable onlyOwner {
+        if (isPauseTrading != value) {
+            emit PauseTrading(value);
+            isPauseTrading = value;
+        }
     }
 
     /**
@@ -560,8 +602,18 @@ contract ICOManager is Ownable2Step {
         }
     }
 
+    /**
+     * return default rate
+     */
     function getDefaultRate() public view returns (uint256) {
         return defaultRate;
+    }
+
+    /**
+     * return current status pause traiding
+     */
+    function getPauseTraiding() public view returns (bool) {
+        return isPauseTrading;
     }
 
     //endregion
