@@ -698,7 +698,7 @@ contract ICOManager is Ownable2Step {
      */
     function buyToken(TokenomicSetting storage settings) private {
         uint256 rate = getRate();
-        if (msg.value <= MIN_SOLD_VOLUME * 1e18 / rate) {
+        if (msg.value < MIN_SOLD_VOLUME * 1e18 / rate) {
             revert MinSoldError();
         }
         uint256 tokens = msg.value * rate / settings.price;
