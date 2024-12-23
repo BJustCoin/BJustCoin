@@ -30,7 +30,7 @@ contract ICOManagerICO_test is Test {
         icoManager = new ICOManager();
         _oracle = new Oracle();
         _icoManagerConst = new ICOManagerConst();
-        testScriptStrategic = _icoManagerConst.InitStrategicData();
+        //testScriptStrategic = _icoManagerConst.InitStrategicData();
         testScriptSeed = _icoManagerConst.InitSeedData();
         testScriptPrivateSale = _icoManagerConst.InitPrivateSaleData();
         testScriptIDO = _icoManagerConst.InitIDOData();
@@ -53,8 +53,7 @@ contract ICOManagerICO_test is Test {
         assertEq(uint8(tt1), 0, "tt1");
     }
 
-    function test_getTokenomicType_ICOCompleted() public {
-        icoManager.nextICOStage();
+    function test_getTokenomicType_ICOCompleted() public {        
         icoManager.nextICOStage();
         icoManager.nextICOStage();
         icoManager.nextICOStage();
@@ -66,16 +65,14 @@ contract ICOManagerICO_test is Test {
     }
 
     function test_getTokenomicType() public {
+        icoManager.nextICOStage();        
+        assertEq(uint8(icoManager.getTokenomicType()), uint8(TokenomicType.Seed), "tt1");
         icoManager.nextICOStage();
-        assertEq(uint8(icoManager.getTokenomicType()), uint8(TokenomicType.Strategic), "tt1");
+        assertEq(uint8(icoManager.getTokenomicType()), uint8(TokenomicType.PrivateSale), "tt2");
         icoManager.nextICOStage();
-        assertEq(uint8(icoManager.getTokenomicType()), uint8(TokenomicType.Seed), "tt2");
+        assertEq(uint8(icoManager.getTokenomicType()), uint8(TokenomicType.IDO), "tt3");
         icoManager.nextICOStage();
-        assertEq(uint8(icoManager.getTokenomicType()), uint8(TokenomicType.PrivateSale), "tt3");
-        icoManager.nextICOStage();
-        assertEq(uint8(icoManager.getTokenomicType()), uint8(TokenomicType.IDO), "tt4");
-        icoManager.nextICOStage();
-        assertEq(uint8(icoManager.getTokenomicType()), uint8(TokenomicType.PublicSale), "tt5");
+        assertEq(uint8(icoManager.getTokenomicType()), uint8(TokenomicType.PublicSale), "tt4");
     }
 
     function test_ICOError_buy_befor_ICOStart() public {
@@ -86,10 +83,7 @@ contract ICOManagerICO_test is Test {
     }
 
     function test_ICOToken_transfer() public {
-        //strategic
-        icoManager.nextICOStage();
-        icoManager.transferICOToken(ALICE, 100 * 1e18);
-        assertEq(VestingToken(icoManager.strategicToken()).balanceOf(ALICE) / 1e18, 100, "(Transfer) strategicToken");
+
         //seed
         icoManager.nextICOStage();
         icoManager.transferICOToken(ALICE, 200 * 1e18);
@@ -123,8 +117,6 @@ contract ICOManagerICO_test is Test {
     }
 
     function test_ICOError_buy_after_ICOEnd() public {
-        //strategic
-        icoManager.nextICOStage();
         //seed
         icoManager.nextICOStage();
         //private sale
@@ -142,8 +134,6 @@ contract ICOManagerICO_test is Test {
     }
 
     function test_ICOError_NextICOStage() public {
-        //strategic
-        icoManager.nextICOStage();
         //seed
         icoManager.nextICOStage();
         //private sale
@@ -163,13 +153,6 @@ contract ICOManagerICO_test is Test {
         //to Strategic stage
         icoManager.nextICOStage();
         startHoax(ALICE, 5 ether);
-
-        test_ICOToken_month0();
-
-        vm.warp(block.timestamp + month);
-        vm.stopPrank();
-        icoManager.nextICOStage();
-        vm.startPrank(ALICE);
 
         test_ICOToken_month1();
 
@@ -282,16 +265,6 @@ contract ICOManagerICO_test is Test {
     }
 
     function logBalance(string memory monthNumber) private view {
-        if (icoManager.getICOStage() >= ICOStage.Strategic) {
-            console.log(
-                string.concat(monthNumber, " StratigicBalance: "),
-                VestingToken(icoManager.strategicToken()).balanceOf(ALICE) / 1e18
-            );
-            console.log(
-                string.concat(monthNumber, " StratigicAvailableBalance: "),
-                VestingToken(icoManager.strategicToken()).availableBalanceOf(ALICE) / 1e18
-            );
-        }
         if (icoManager.getICOStage() >= ICOStage.Seed) {
             console.log(
                 string.concat(monthNumber, " SeedBalance: "),

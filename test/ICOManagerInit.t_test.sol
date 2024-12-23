@@ -32,7 +32,6 @@ contract ICOManagerInitTest is Test {
 
     //region strategicToken
     function test_init_strategic() public {
-        icoManager.nextICOStage();
         assertEq(icoManager.strategicToken().totalSupply(), 0, "StrategicToken.TotalSypply");
         assertEq(
             icoManager.strategicToken().balanceOf(address(icoManager.owner())),
@@ -278,9 +277,6 @@ contract ICOManagerInitTest is Test {
     //endregion
 
     function test_birnBJC() public {
-        //strategic
-        icoManager.nextICOStage();
-
         //seed
         icoManager.nextICOStage();
         //private sale
@@ -294,6 +290,6 @@ contract ICOManagerInitTest is Test {
 
         Bjustcoin baseToken = Bjustcoin(icoManager.getBaseToken());
 
-        assertEq(baseToken.totalSupply(), 100_000_000 * 1e18 - 33_000_000 * 1e18, "baseToken.totalSupply");
+        assertEq(baseToken.totalSupply(), 100_000_000 * 1e18 - 30_000_000 * 1e18, "baseToken.totalSupply");
     }
 }
