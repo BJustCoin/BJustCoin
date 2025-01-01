@@ -53,7 +53,7 @@ contract ICOManagerICO_test is Test {
         assertEq(uint8(tt1), 0, "tt1");
     }
 
-    function test_getTokenomicType_ICOCompleted() public {        
+    function test_getTokenomicType_ICOCompleted() public {
         icoManager.nextICOStage();
         icoManager.nextICOStage();
         icoManager.nextICOStage();
@@ -65,7 +65,7 @@ contract ICOManagerICO_test is Test {
     }
 
     function test_getTokenomicType() public {
-        icoManager.nextICOStage();        
+        icoManager.nextICOStage();
         assertEq(uint8(icoManager.getTokenomicType()), uint8(TokenomicType.Seed), "tt1");
         icoManager.nextICOStage();
         assertEq(uint8(icoManager.getTokenomicType()), uint8(TokenomicType.PrivateSale), "tt2");
@@ -83,7 +83,6 @@ contract ICOManagerICO_test is Test {
     }
 
     function test_ICOToken_transfer() public {
-
         //seed
         icoManager.nextICOStage();
         icoManager.transferICOToken(ALICE, 200 * 1e18);
