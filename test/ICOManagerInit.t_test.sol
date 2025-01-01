@@ -31,7 +31,7 @@ contract ICOManagerInitTest is Test {
     //endregion
 
     //region strategicToken
-    function test_init_strategic() public {
+    function test_init_strategic() public view {
         assertEq(icoManager.strategicToken().totalSupply(), 0, "StrategicToken.TotalSypply");
         assertEq(
             icoManager.strategicToken().balanceOf(address(icoManager.owner())),

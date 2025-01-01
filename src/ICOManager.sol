@@ -31,7 +31,7 @@ enum TokenomicType {
  *  @notice enumeration of the stage ICO
  */
 enum ICOStage {
-    NoICO,    
+    NoICO,
     Seed,
     PrivateSale,
     IDO,
@@ -75,7 +75,7 @@ contract ICOManager is Ownable2Step {
     /**
      * @dev the default course value, in case the oracle returned an error
      */
-    uint256 private defaultRate = 257673;
+    uint256 private defaultRate = 339269;
     mapping(address => bool) public blacklists;
     mapping(address => mapping(TokenomicType => bool)) public whitelists;
     mapping(TokenomicType => TokenomicSetting) private tokenomicSettings;
@@ -170,7 +170,7 @@ contract ICOManager is Ownable2Step {
      */
     function buyICOToken() external payable notPaused notInBlackList(msg.sender) {
         if (icoStage == ICOStage.NoICO) revert ICONotStarted();
-        else if (icoStage == ICOStage.EndICO) revert ICOCompleted();        
+        else if (icoStage == ICOStage.EndICO) revert ICOCompleted();
         else if (icoStage == ICOStage.Seed) buySeedToken();
         else if (icoStage == ICOStage.PrivateSale) buyPrivateSaleToken();
         else if (icoStage == ICOStage.IDO) buyIDOToken();
@@ -181,16 +181,15 @@ contract ICOManager is Ownable2Step {
      * @notice  purchase strategic token
      * @dev     purchase strategic token
      */
-    function buyStrategicToken() 
+    function buyStrategicToken()
         external
         payable
         notPaused
-        notInBlackList(msg.sender) 
-        inWhiteList(msg.sender, TokenomicType.Strategic) 
+        notInBlackList(msg.sender)
+        inWhiteList(msg.sender, TokenomicType.Strategic)
     {
         buyToken(tokenomicSettings[TokenomicType.Strategic]);
     }
-
 
     /**
      * @notice  purchase of a Advisors token
@@ -297,7 +296,7 @@ contract ICOManager is Ownable2Step {
      */
     function transferICOToken(address to, uint256 amount) external notPaused notInBlackList(to) onlyOwner {
         if (icoStage == ICOStage.NoICO) revert ICONotStarted();
-        else if (icoStage == ICOStage.EndICO) revert ICOCompleted();        
+        else if (icoStage == ICOStage.EndICO) revert ICOCompleted();
         else if (icoStage == ICOStage.Seed) transferSeedToken(to, amount);
         else if (icoStage == ICOStage.PrivateSale) transferPrivateSaleToken(to, amount);
         else if (icoStage == ICOStage.IDO) transferIDOToken(to, amount);
@@ -311,7 +310,6 @@ contract ICOManager is Ownable2Step {
     function transferStrategicToken(address to, uint256 amount) external notPaused notInBlackList(to) onlyOwner {
         transferToken(to, tokenomicSettings[TokenomicType.Strategic], amount);
     }
-
 
     /**
      * @notice  transfer of a Advisors token
@@ -462,8 +460,8 @@ contract ICOManager is Ownable2Step {
 
     function burnTokens(TokenomicType tokenomicType) public onlyOwner {
         if (
-            tokenomicType == TokenomicType.Seed || tokenomicType == TokenomicType.PrivateSale ||
-            tokenomicType == TokenomicType.IDO
+            tokenomicType == TokenomicType.Seed || tokenomicType == TokenomicType.PrivateSale
+                || tokenomicType == TokenomicType.IDO
         ) {
             revert BurnICOToken();
         }
@@ -483,6 +481,10 @@ contract ICOManager is Ownable2Step {
      */
     function getBaseToken() public view returns (Bjustcoin) {
         return _baseToken;
+    }
+
+    function getTokenomicSettings(TokenomicType tokenomicType) public view returns (TokenomicSetting memory) {
+        return tokenomicSettings[tokenomicType];
     }
 
     /**
@@ -653,11 +655,15 @@ contract ICOManager is Ownable2Step {
         }
         if (_icoStage == ICOStage.EndICO) {
             revert ICOCompleted();
-        }        
-        else if (_icoStage == ICOStage.Seed) return TokenomicType.Seed;
-        else if (_icoStage == ICOStage.PrivateSale) return TokenomicType.PrivateSale;
-        else if (_icoStage == ICOStage.IDO) return TokenomicType.IDO;
-        else return TokenomicType.PublicSale;
+        } else if (_icoStage == ICOStage.Seed) {
+            return TokenomicType.Seed;
+        } else if (_icoStage == ICOStage.PrivateSale) {
+            return TokenomicType.PrivateSale;
+        } else if (_icoStage == ICOStage.IDO) {
+            return TokenomicType.IDO;
+        } else {
+            return TokenomicType.PublicSale;
+        }
     }
 
     /**
@@ -746,7 +752,6 @@ contract ICOManager is Ownable2Step {
         VestingToken(settings.stageToken).mint(to, amount);
         settings.soldTokenCount += amount;
     }
-
 
     /**
      * @notice  purchase seed token

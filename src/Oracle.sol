@@ -20,12 +20,13 @@ contract Oracle {
         uint256 updatedAt;
         uint256 staleTime = 3600;
         (, price,, updatedAt,) = priceFeed.latestRoundData();
+        int256 result = price / 1e6;
         uint256 deltaRate = defaultRate / 5; //20%
-        if (uint256(price) < defaultRate - deltaRate || uint256(price) > defaultRate + deltaRate) {
+        if (uint256(result) < defaultRate - deltaRate || uint256(result) > defaultRate + deltaRate) {
             revert GetLastPriceError();
         }
         if (updatedAt < block.timestamp - staleTime) revert GetLastPriceError();
-        return price / 1e6;
+        return result;
     }
 }
 
