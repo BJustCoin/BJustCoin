@@ -283,7 +283,9 @@ contract ICOManagerTeam_test is Test {
     function test_TeamToken() public {
         uint256 sendEth = getEthCount(testScript.startParams.buyUSD); // uint256(testScript.startParams.buyUSD * 1e18 / uint256(_oracle.getLatestPrice()));
         icoManager.whitelist(ALICE, TokenomicType.Team, true);
+        uint256 startTimeStamp = block.timestamp;
         startHoax(ALICE, 1 ether);
+        vm.warp(block.timestamp + 15 days);
         icoManager.buyTeamToken{value: sendEth + gas}();
 
         /**
@@ -302,7 +304,7 @@ contract ICOManagerTeam_test is Test {
         assertEq(
             ERC20(icoManager.getBaseToken()).balanceOf(ALICE) / 1e18, testScript.buyToken.bjcBalance, "(Buy) BJC tokens"
         );
-        vm.warp(block.timestamp + testScript.startParams.cliffMonth * 365 days / 12);
+        vm.warp(startTimeStamp + testScript.startParams.cliffMonth * 365 days / 12);
         uint256 cliffTimeStamp = block.timestamp;
 
         /**

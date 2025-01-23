@@ -642,7 +642,7 @@ contract ICOManagerConst {
         startParams.vestingPeriod067 = (startParams.vestingMonth * 365 days * 2) / (12 * 3);
 
         ICOManagerTestTimePoint memory buyToken =
-            ICOManagerTestTimePoint({stageTokenBalance: 300, availableBalance: 0, bjcBalance: 0});
+            ICOManagerTestTimePoint({stageTokenBalance: 300, availableBalance: 3, bjcBalance: 0});
         ICOManagerTestTimePoint memory endLess =
             ICOManagerTestTimePoint({stageTokenBalance: 300, availableBalance: 0, bjcBalance: 0});
         ICOManagerTestTimePoint memory endLessClaim =

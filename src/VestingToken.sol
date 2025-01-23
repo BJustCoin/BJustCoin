@@ -52,8 +52,7 @@ contract VestingToken is IVestingToken, Initializable, ERC20Upgradeable {
     error CliffBeforeStartTime();
     error IncorrectSchedulePortions();
     error IncorrectScheduleTime(uint256 incorrectTime);
-    error TransfersNotAllowed();
-    error MintingAfterCliffIsForbidden();
+    error TransfersNotAllowed();    
     error PercentError();
 
     // endregion
@@ -189,9 +188,6 @@ contract VestingToken is IVestingToken, Initializable, ERC20Upgradeable {
      * @param   amount  count token
      */
     function mint(address to, uint256 amount) external onlyMinter {
-        if (block.timestamp > _vesting.cliff) {
-            revert MintingAfterCliffIsForbidden();
-        }
         _initialLocked[to] = _initialLocked[to] + amount;
         _initialLockedSupply = _initialLockedSupply + amount;
         address thisAddress = address(this);

@@ -280,24 +280,5 @@ contract VestingTest is Test {
         console.log("totalSupply", VestingToken(vestingToken).totalSupply());
     }
 
-    function test_MintingAfterCliffIsForbidden() public {
-        Schedule[] memory schedule = new Schedule[](2);
-        Schedule memory scheduleItem1 = Schedule(block.timestamp + 2 days, 5040 / 2);
-        Schedule memory scheduleItem2 = Schedule(block.timestamp + 3 days, 5040 / 2);
-        schedule[0] = scheduleItem1;
-        schedule[1] = scheduleItem2;
 
-        Vesting memory vestingParams = Vesting(block.timestamp, block.timestamp + 1 days, 0, schedule);
-
-        address vestingToken =
-            _vestingManager.createVesting("VestingToken", "VT", address(_baseToken), address(this), vestingParams);
-        console.log("totalSupply", VestingToken(vestingToken).totalSupply());
-        uint256 vestingValue = 1e18;
-        vm.warp(block.timestamp + 5 days);
-
-        _baseToken.mint(address(this), vestingValue);
-        _baseToken.approve(vestingToken, vestingValue);
-        vm.expectRevert(VestingToken.MintingAfterCliffIsForbidden.selector);
-        VestingToken(vestingToken).mint(ALICE, vestingValue);
-    }
 }

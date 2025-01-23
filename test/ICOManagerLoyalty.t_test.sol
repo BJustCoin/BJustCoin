@@ -53,7 +53,10 @@ contract ICOManagerLoyalty_test is Test {
     function test_LoyaltyToken_Transfer() public {
         icoManager.transferLoyaltyToken(ALICE, testScript.buyToken.stageTokenBalance * 1e18);
         vm.startPrank(ALICE);
-
+        uint256 startTimeStamp = block.timestamp;
+        
+        
+        vm.warp(block.timestamp + 15 days);
         /**
          * покупка
          */
@@ -72,7 +75,7 @@ contract ICOManagerLoyalty_test is Test {
             testScript.buyToken.bjcBalance,
             "(Transfer) BJC tokens"
         );
-        vm.warp(block.timestamp + testScript.startParams.cliffMonth * 365 days / 12);
+        vm.warp(startTimeStamp + testScript.startParams.cliffMonth * 365 days / 12);
         uint256 cliffTimeStamp = block.timestamp;
 
         /**
@@ -283,8 +286,11 @@ contract ICOManagerLoyalty_test is Test {
 
     function test_LoyaltyToken() public {
         uint256 sendEth = getEthCount(testScript.startParams.buyUSD);
-        icoManager.whitelist(ALICE, TokenomicType.Loyalty, true);
+        icoManager.whitelist(ALICE, TokenomicType.Loyalty, true);        
+        uint256 startTimeStamp = block.timestamp;
         startHoax(ALICE, 1 ether);
+        
+        vm.warp(block.timestamp + 15 days);
         icoManager.buyLoyaltyToken{value: sendEth + gas}();
 
         /**
@@ -303,7 +309,7 @@ contract ICOManagerLoyalty_test is Test {
         assertEq(
             ERC20(icoManager.getBaseToken()).balanceOf(ALICE) / 1e18, testScript.buyToken.bjcBalance, "(Buy) BJC tokens"
         );
-        vm.warp(block.timestamp + testScript.startParams.cliffMonth * 365 days / 12);
+        vm.warp(startTimeStamp + testScript.startParams.cliffMonth * 365 days / 12);
         uint256 cliffTimeStamp = block.timestamp;
 
         /**
