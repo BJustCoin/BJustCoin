@@ -12,7 +12,7 @@ contract ICOManagerInitTest is Test {
     address internal ALICE = vm.addr(0xA11CE);
     ICOManager public icoManager;
     //icoManager.MIN_SOLD_VOLUME
-    uint256 private constant MIN_SOLD_VOLUME = 1000; //10$
+    uint256 private constant MIN_SOLD_VOLUME = 10 * 1e8; //10$
 
     function setUp() public {
         icoManager = new ICOManager();

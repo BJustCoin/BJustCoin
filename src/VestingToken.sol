@@ -52,7 +52,7 @@ contract VestingToken is IVestingToken, Initializable, ERC20Upgradeable {
     error CliffBeforeStartTime();
     error IncorrectSchedulePortions();
     error IncorrectScheduleTime(uint256 incorrectTime);
-    error TransfersNotAllowed();    
+    error TransfersNotAllowed();
     error PercentError();
 
     // endregion

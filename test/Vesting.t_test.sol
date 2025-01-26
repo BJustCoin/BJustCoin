@@ -279,6 +279,4 @@ contract VestingTest is Test {
             _vestingManager.createVesting("VestingToken", "VT", address(_baseToken), address(this), vestingParams);
         console.log("totalSupply", VestingToken(vestingToken).totalSupply());
     }
-
-
 }

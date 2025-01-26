@@ -18,7 +18,7 @@ contract ICOManagerAdvisors_test is Test {
     ICOManagerTestScript testScript;
     uint256 gas = 242194;
     //icoManager.MIN_SOLD_VOLUME
-    uint256 private constant MIN_SOLD_VOLUME = 1000; //10$
+    uint256 private constant MIN_SOLD_VOLUME = 10 * 1e8; //10$
 
     function setUp() public {
         icoManager = new ICOManager();
@@ -28,24 +28,24 @@ contract ICOManagerAdvisors_test is Test {
     }
 
     function getEthCount(uint256 buyUSD) private view returns (uint256) {
-        return uint256(buyUSD * 1e18 / uint256(icoManager.getRate()));
+        return uint256(buyUSD * 1e18 / icoManager.getRate());
     }
 
     //Покупка токенов меньше минимальной покупки
     function test_AdvisorsToken_minSoldVolume() public {
         uint256 sendEth = getEthCount(MIN_SOLD_VOLUME - 1);
         icoManager.whitelist(ALICE, TokenomicType.Advisors, true);
-        startHoax(ALICE, 1 ether);
+        startHoax(ALICE, 1000 ether);
         vm.expectRevert(ICOManager.MinSoldError.selector);
         icoManager.buyAdvisorsToken{value: sendEth + gas}();
     }
 
     //Покупка токенов, для случая когда их недостаточно (цена по 1$ за токен)
     function test_AdvisorsToken_maxusd() public {
-        uint256 sendEth = getEthCount(testScript.startParams.maxTokenCount) / 1e16;
+        uint256 sendEth = getEthCount(testScript.startParams.maxTokenCount * 1e8);
         icoManager.whitelist(ALICE, TokenomicType.Advisors, true);
         console.log("sendEth = ", sendEth);
-        startHoax(ALICE, 10000 ether);
+        startHoax(ALICE, 10000000000 ether);
         vm.expectRevert(ICOManager.InsufficientFunds.selector);
         icoManager.buyAdvisorsToken{value: sendEth + gas}();
     }
@@ -281,7 +281,7 @@ contract ICOManagerAdvisors_test is Test {
     function test_AdvisorsToken() public {
         uint256 sendEth = getEthCount(testScript.startParams.buyUSD);
         icoManager.whitelist(ALICE, TokenomicType.Advisors, true);
-        startHoax(ALICE, 1 ether);
+        startHoax(ALICE, 10000 ether);
         icoManager.buyAdvisorsToken{value: sendEth + gas}();
 
         /**

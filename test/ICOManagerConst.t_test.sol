@@ -14,7 +14,7 @@ struct ICOManagerTestStartParams {
     string simvolToken; //символ токена
     uint256 maxTokenCount; //максимальное количество токенов
     uint256 soldTokenCount; //продано токенов
-    uint8 price; //цена в центах
+    uint256 price; //цена в центах
     uint8 cliffMonth; //период less, в месяцах
     uint8 vestingMonth; //период vesting, в месяцах
     uint256 buyUSD; //покупка на сумму в в центах
@@ -48,12 +48,12 @@ contract ICOManagerConst {
         ICOManagerTestStartParams memory startParams;
         startParams.nameToken = "BJCStrategic";
         startParams.simvolToken = "BJCSTR";
-        startParams.maxTokenCount = 3_000_000 * 1e18;
-        startParams.price = 35;
+        startParams.maxTokenCount = 3_000_000;
+        startParams.price = 35 * 1e6;
         startParams.cliffMonth = 12;
         startParams.vestingMonth = 24;
         startParams.unlockTokensPercent = 0;
-        startParams.buyUSD = 10500;
+        startParams.buyUSD = 105 * 1e8;
         startParams.vestingPeriod033 = (startParams.vestingMonth * 365 days) / (12 * 3);
         startParams.vestingPeriod050 = (startParams.vestingMonth * 365 days) / (12 * 2);
         startParams.vestingPeriod067 = (startParams.vestingMonth * 365 days * 2) / (12 * 3);
@@ -101,12 +101,12 @@ contract ICOManagerConst {
         ICOManagerTestStartParams memory startParams;
         startParams.nameToken = "BJCSeed";
         startParams.simvolToken = "BJCSEED";
-        startParams.maxTokenCount = 4_000_000 * 1e18;
-        startParams.price = 45;
+        startParams.maxTokenCount = 4_000_000;
+        startParams.price = 45 * 1e6;
         startParams.cliffMonth = 12;
         startParams.vestingMonth = 24;
         startParams.unlockTokensPercent = 0;
-        startParams.buyUSD = 13500;
+        startParams.buyUSD = 135 * 1e8;
         startParams.vestingPeriod033 = (startParams.vestingMonth * 365 days) / (12 * 3);
         startParams.vestingPeriod050 = (startParams.vestingMonth * 365 days) / (12 * 2);
         startParams.vestingPeriod067 = (startParams.vestingMonth * 365 days * 2) / (12 * 3);
@@ -154,12 +154,12 @@ contract ICOManagerConst {
         ICOManagerTestStartParams memory startParams;
         startParams.nameToken = "BJCPrivateSale";
         startParams.simvolToken = "BJCPRI";
-        startParams.maxTokenCount = 6_000_000 * 1e18;
-        startParams.price = 55;
+        startParams.maxTokenCount = 6_000_000;
+        startParams.price = 55 * 1e6;
         startParams.cliffMonth = 12;
         startParams.vestingMonth = 28;
         startParams.unlockTokensPercent = 5;
-        startParams.buyUSD = 33000;
+        startParams.buyUSD = 330 * 1e8;
         startParams.vestingPeriod033 = (startParams.vestingMonth * 365 days) / (12 * 3);
         startParams.vestingPeriod050 = (startParams.vestingMonth * 365 days) / (12 * 2);
         startParams.vestingPeriod067 = (startParams.vestingMonth * 365 days * 2) / (12 * 3);
@@ -207,12 +207,12 @@ contract ICOManagerConst {
         ICOManagerTestStartParams memory startParams;
         startParams.nameToken = "BJCIDO";
         startParams.simvolToken = "BJCIDO";
-        startParams.maxTokenCount = 5_000_000 * 1e18;
-        startParams.price = 65;
+        startParams.maxTokenCount = 5_000_000;
+        startParams.price = 65 * 1e6;
         startParams.cliffMonth = 6;
         startParams.vestingMonth = 30;
         startParams.unlockTokensPercent = 15;
-        startParams.buyUSD = 39000;
+        startParams.buyUSD = 390 * 1e8;
         startParams.vestingPeriod033 = (startParams.vestingMonth * 365 days) / (12 * 3);
         startParams.vestingPeriod050 = (startParams.vestingMonth * 365 days) / (12 * 2);
         startParams.vestingPeriod067 = (startParams.vestingMonth * 365 days * 2) / (12 * 3);
@@ -260,12 +260,12 @@ contract ICOManagerConst {
         ICOManagerTestStartParams memory startParams;
         startParams.nameToken = "BJCPublicSale";
         startParams.simvolToken = "BJCPUB";
-        startParams.maxTokenCount = 15_000_000 * 1e18;
-        startParams.price = 75;
+        startParams.maxTokenCount = 15_000_000;
+        startParams.price = 75 * 1e6;
         startParams.cliffMonth = 9;
         startParams.vestingMonth = 24;
         startParams.unlockTokensPercent = 5;
-        startParams.buyUSD = 45000;
+        startParams.buyUSD = 450 * 1e8;
         startParams.vestingPeriod033 = (startParams.vestingMonth * 365 days) / (12 * 3);
         startParams.vestingPeriod050 = (startParams.vestingMonth * 365 days) / (12 * 2);
         startParams.vestingPeriod067 = (startParams.vestingMonth * 365 days * 2) / (12 * 3);
@@ -313,12 +313,12 @@ contract ICOManagerConst {
         ICOManagerTestStartParams memory startParams;
         startParams.nameToken = "BJCSAdvisors";
         startParams.simvolToken = "BJCADV";
-        startParams.maxTokenCount = 1_500_000 * 1e18;
-        startParams.price = 75;
+        startParams.maxTokenCount = 1_500_000;
+        startParams.price = 75 * 1e6;
         startParams.cliffMonth = 12;
         startParams.vestingMonth = 36;
         startParams.unlockTokensPercent = 3;
-        startParams.buyUSD = 45000;
+        startParams.buyUSD = 450 * 1e8;
         startParams.vestingPeriod033 = (startParams.vestingMonth * 365 days) / (12 * 3);
         startParams.vestingPeriod050 = (startParams.vestingMonth * 365 days) / (12 * 2);
         startParams.vestingPeriod067 = (startParams.vestingMonth * 365 days * 2) / (12 * 3);
@@ -366,12 +366,12 @@ contract ICOManagerConst {
         ICOManagerTestStartParams memory startParams;
         startParams.nameToken = "BJCTeam";
         startParams.simvolToken = "BJCTEAM";
-        startParams.maxTokenCount = 4_500_000 * 1e18;
-        startParams.price = 75;
+        startParams.maxTokenCount = 4_500_000;
+        startParams.price = 75 * 1e6;
         startParams.cliffMonth = 24;
         startParams.vestingMonth = 24;
         startParams.unlockTokensPercent = 5;
-        startParams.buyUSD = 45000;
+        startParams.buyUSD = 450 * 1e8;
         startParams.vestingPeriod033 = (startParams.vestingMonth * 365 days) / (12 * 3);
         startParams.vestingPeriod050 = (startParams.vestingMonth * 365 days) / (12 * 2);
         startParams.vestingPeriod067 = (startParams.vestingMonth * 365 days * 2) / (12 * 3);
@@ -419,12 +419,12 @@ contract ICOManagerConst {
         ICOManagerTestStartParams memory startParams;
         startParams.nameToken = "BJCFutureTeam";
         startParams.simvolToken = "BJCFUT";
-        startParams.maxTokenCount = 5_000_000 * 1e18;
-        startParams.price = 75;
+        startParams.maxTokenCount = 5_000_000;
+        startParams.price = 75 * 1e6;
         startParams.cliffMonth = 12;
         startParams.vestingMonth = 24;
         startParams.unlockTokensPercent = 0;
-        startParams.buyUSD = 22500;
+        startParams.buyUSD = 225 * 1e8;
         startParams.vestingPeriod033 = (startParams.vestingMonth * 365 days) / (12 * 3);
         startParams.vestingPeriod050 = (startParams.vestingMonth * 365 days) / (12 * 2);
         startParams.vestingPeriod067 = (startParams.vestingMonth * 365 days * 2) / (12 * 3);
@@ -472,12 +472,12 @@ contract ICOManagerConst {
         ICOManagerTestStartParams memory startParams;
         startParams.nameToken = "BJCIncentives";
         startParams.simvolToken = "BJCINC";
-        startParams.maxTokenCount = 11_000_000 * 1e18;
-        startParams.price = 75;
+        startParams.maxTokenCount = 11_000_000;
+        startParams.price = 75 * 1e6;
         startParams.cliffMonth = 0;
         startParams.vestingMonth = 18;
         startParams.unlockTokensPercent = 15;
-        startParams.buyUSD = 45000;
+        startParams.buyUSD = 450 * 1e8;
         startParams.vestingPeriod033 = (startParams.vestingMonth * 365 days) / (12 * 3);
         startParams.vestingPeriod050 = (startParams.vestingMonth * 365 days) / (12 * 2);
         startParams.vestingPeriod067 = (startParams.vestingMonth * 365 days * 2) / (12 * 3);
@@ -525,12 +525,12 @@ contract ICOManagerConst {
         ICOManagerTestStartParams memory startParams;
         startParams.nameToken = "BJCLiqudity";
         startParams.simvolToken = "BJCLIQ";
-        startParams.maxTokenCount = 15_000_000 * 1e18;
-        startParams.price = 75;
+        startParams.maxTokenCount = 15_000_000;
+        startParams.price = 75 * 1e6;
         startParams.cliffMonth = 0;
         startParams.vestingMonth = 18;
         startParams.unlockTokensPercent = 25;
-        startParams.buyUSD = 45000;
+        startParams.buyUSD = 450 * 1e8;
         startParams.vestingPeriod033 = (startParams.vestingMonth * 365 days) / (12 * 3);
         startParams.vestingPeriod050 = (startParams.vestingMonth * 365 days) / (12 * 2);
         startParams.vestingPeriod067 = (startParams.vestingMonth * 365 days * 2) / (12 * 3);
@@ -578,12 +578,12 @@ contract ICOManagerConst {
         ICOManagerTestStartParams memory startParams;
         startParams.nameToken = "BJCEcosystem";
         startParams.simvolToken = "BJCECO";
-        startParams.maxTokenCount = 15_000_000 * 1e18;
-        startParams.price = 75;
+        startParams.maxTokenCount = 15_000_000;
+        startParams.price = 75 * 1e6;
         startParams.cliffMonth = 0;
         startParams.vestingMonth = 12;
         startParams.unlockTokensPercent = 10;
-        startParams.buyUSD = 22500;
+        startParams.buyUSD = 225 * 1e8;
         startParams.vestingPeriod033 = (startParams.vestingMonth * 365 days) / (12 * 3);
         startParams.vestingPeriod050 = (startParams.vestingMonth * 365 days) / (12 * 2);
         startParams.vestingPeriod067 = (startParams.vestingMonth * 365 days * 2) / (12 * 3);
@@ -631,12 +631,12 @@ contract ICOManagerConst {
         ICOManagerTestStartParams memory startParams;
         startParams.nameToken = "BJCLoyalty";
         startParams.simvolToken = "BJCLOY";
-        startParams.maxTokenCount = 15_000_000 * 1e18;
-        startParams.price = 75;
+        startParams.maxTokenCount = 15_000_000;
+        startParams.price = 75 * 1e6;
         startParams.cliffMonth = 0;
         startParams.vestingMonth = 48;
         startParams.unlockTokensPercent = 0;
-        startParams.buyUSD = 22500;
+        startParams.buyUSD = 225 * 1e8;
         startParams.vestingPeriod033 = (startParams.vestingMonth * 365 days) / (12 * 3);
         startParams.vestingPeriod050 = (startParams.vestingMonth * 365 days) / (12 * 2);
         startParams.vestingPeriod067 = (startParams.vestingMonth * 365 days * 2) / (12 * 3);

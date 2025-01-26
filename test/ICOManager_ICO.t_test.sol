@@ -106,9 +106,9 @@ contract ICOManagerICO_test is Test {
     function test_ICOToken_blacklist() public {
         icoManager.blacklist(ALICE, true);
         icoManager.nextICOStage();
-        uint256 eth = sendEth(1500) + gas;
+        uint256 eth = sendEth(15 * 1e8) + gas;
         vm.expectRevert(ICOManager.Blacklisted.selector);
-        hoax(ALICE, 5 ether);
+        hoax(ALICE, 50000 ether);
         icoManager.buyICOToken{value: eth}();
         icoManager.blacklist(ALICE, false);
         vm.prank(ALICE);
@@ -151,7 +151,7 @@ contract ICOManagerICO_test is Test {
     function test_ICOTokenFull() public {
         //to Strategic stage
         icoManager.nextICOStage();
-        startHoax(ALICE, 5 ether);
+        startHoax(ALICE, 5000 ether);
 
         test_ICOToken_month1();
 

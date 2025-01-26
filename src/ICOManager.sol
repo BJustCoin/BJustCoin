@@ -48,7 +48,7 @@ struct TokenomicSetting {
     string simvolToken; //символ токена
     uint256 maxTokenCount; //максимальное количество токенов
     uint256 soldTokenCount; //продано токенов
-    uint8 price; //цена
+    uint256 price; //цена
     uint8 cliffMonth; //период less, в месяцах
     uint8 vestingMonth; //период vesting, в месяцах
     uint8 unlockTokensPercent; //процент разблокированных токенов по окончании периода less
@@ -65,17 +65,18 @@ contract ICOManager is Ownable2Step {
      */
     uint256 private constant BASIS_TOKENS_FOR_VESTING_TOKENS = 5040;
     uint256 private constant MONTH = 365 days / 12;
-    uint256 private constant MIN_SOLD_VOLUME = 1000; //10$
-    Oracle internal immutable _oracle;
+    uint256 private constant MIN_SOLD_VOLUME = 10 * 1e8; //10$
     VestingToken internal immutable _vestingTokenImpl;
     VestingManager internal immutable _vestingManager;
     Bjustcoin internal immutable _baseToken;
+    address private _oracleAddress = address(0);
+    Oracle internal _oracle;
     ICOStage private icoStage;
     bool private isPauseTrading = false;
     /**
      * @dev the default course value, in case the oracle returned an error
      */
-    uint256 private defaultRate = 339269;
+    uint256 private defaultRate = 339269000000; //43512332;//
     mapping(address => bool) public blacklists;
     mapping(address => mapping(TokenomicType => bool)) public whitelists;
     mapping(TokenomicType => TokenomicSetting) private tokenomicSettings;
@@ -92,6 +93,9 @@ contract ICOManager is Ownable2Step {
     event WhiteList(address indexed _address, TokenomicType _tokenomicType, bool _isWhitelisting);
     event BurnTokens(TokenomicType tokenomic, uint256 count);
     event PauseTrading(bool isPause);
+    event BatchTransfer(TokenomicType tokenomic, address[] recipients, uint256[] amount);
+    event UpdateOracleAddress(address indexed oracle);
+
     //endregion
 
     //region - Errors
@@ -110,6 +114,8 @@ contract ICOManager is Ownable2Step {
     error BurnICOToken();
     error SetDefaultRateByZero();
     error PausedTrading();
+    error BalanceNotNull();
+    error IncorrectParameters();
     //endregion
 
     //region - Modifier
@@ -149,7 +155,6 @@ contract ICOManager is Ownable2Step {
         _vestingTokenImpl = new VestingToken(BASIS_TOKENS_FOR_VESTING_TOKENS);
         _vestingManager = new VestingManager(address(_vestingTokenImpl));
         _baseToken = new Bjustcoin(address(this));
-        _oracle = new Oracle();
 
         icoStage = ICOStage.NoICO;
         initTokenomics();
@@ -161,6 +166,12 @@ contract ICOManager is Ownable2Step {
         initVestingToken(tokenomicSettings[TokenomicType.Liquidity]);
         initVestingToken(tokenomicSettings[TokenomicType.Ecosystem]);
         initVestingToken(tokenomicSettings[TokenomicType.Loyalty]);
+    }
+
+    function setOracle(address aggrigator) external payable onlyOwner {
+        emit UpdateOracleAddress(aggrigator);
+        _oracleAddress = aggrigator;
+        _oracle = Oracle(aggrigator);
     }
 
     //region External
@@ -406,6 +417,42 @@ contract ICOManager is Ownable2Step {
         }
     }
 
+    function batchTransfer(TokenomicType tokenomic, address[] calldata recipients, uint256[] calldata amount)
+        external
+        payable
+        onlyOwner
+    {
+        if (
+            tokenomic == TokenomicType.Seed || tokenomic == TokenomicType.PrivateSale || tokenomic == TokenomicType.IDO
+                || tokenomic == TokenomicType.PublicSale
+        ) {
+            try this.getTokenomicType() returns (TokenomicType activeStage) {
+                if (tokenomic != activeStage) {
+                    revert IncorrectParameters();
+                }
+            } catch {}
+        }
+        if (recipients.length != amount.length) {
+            revert IncorrectParameters();
+        }
+        uint256 recipientsLength = recipients.length;
+
+        // Calculate the total amount of tokens being transferred
+        uint256 sumOfAmounts = 0;
+        for (uint256 i = 0; i < amount.length; i++) {
+            sumOfAmounts += amount[i];
+        }
+
+        if (sumOfAmounts > tokenomicSettings[tokenomic].maxTokenCount - tokenomicSettings[tokenomic].soldTokenCount) {
+            revert InsufficientFunds();
+        }
+        emit BatchTransfer(tokenomic, recipients, amount);
+        // Loop through all the recipients and send them the specified amount
+        for (uint256 i = 0; i < recipientsLength; i++) {
+            transferToken(recipients[i], tokenomicSettings[tokenomic], amount[i]);
+        }
+    }
+
     /**
      * set new default rate
      * @param value new default rate
@@ -448,10 +495,22 @@ contract ICOManager is Ownable2Step {
             tokenomicSettings[_initTokenomicType].maxTokenCount = tokenomicSettings[_initTokenomicType].soldTokenCount;
             initVestingToken(tokenomicSettings[_tokenomicType]);
         } else if (icoStage == ICOStage.EndICO) {
-            burnTokens(TokenomicType.PublicSale);
+            uint256 burnCount = tokenomicSettings[TokenomicType.PublicSale].maxTokenCount
+                - tokenomicSettings[TokenomicType.PublicSale].soldTokenCount;
+            tokenomicSettings[TokenomicType.PublicSale].maxTokenCount =
+                tokenomicSettings[TokenomicType.PublicSale].soldTokenCount;
+            emit BurnTokens(TokenomicType.PublicSale, burnCount);
+            _baseToken.burn(burnCount);
         } else {
             initVestingToken(tokenomicSettings[TokenomicType.Seed]);
         }
+    }
+
+    function bjustCoinTransferOwnership() external onlyOwner {
+        if (_baseToken.balanceOf(address(this)) > 0) {
+            revert BalanceNotNull();
+        }
+        _baseToken.transferOwnership(owner());
     }
 
     //endregion
@@ -461,7 +520,7 @@ contract ICOManager is Ownable2Step {
     function burnTokens(TokenomicType tokenomicType) public onlyOwner {
         if (
             tokenomicType == TokenomicType.Seed || tokenomicType == TokenomicType.PrivateSale
-                || tokenomicType == TokenomicType.IDO
+                || tokenomicType == TokenomicType.IDO || tokenomicType == TokenomicType.PublicSale
         ) {
             revert BurnICOToken();
         }
@@ -619,8 +678,9 @@ contract ICOManager is Ownable2Step {
      * @return  rate  .
      */
     function getRate() public view returns (uint256 rate) {
-        try _oracle.getLatestPrice(defaultRate) returns (int256 _rate) {
-            return uint256(_rate);
+        if (this.getOracleAddress() == address(0)) return defaultRate;
+        try _oracle.getLatestPrice(defaultRate) returns (uint256 _rate) {
+            return _rate;
         } catch {
             return defaultRate;
         }
@@ -640,6 +700,9 @@ contract ICOManager is Ownable2Step {
         return isPauseTrading;
     }
 
+    function getOracleAddress() public view returns (address) {
+        return _oracleAddress;
+    }
     //endregion
 
     //region Private
@@ -672,29 +735,29 @@ contract ICOManager is Ownable2Step {
      */
     function initTokenomics() private {
         tokenomicSettings[TokenomicType.Strategic] =
-            TokenomicSetting(address(0), "BJCStrategic", "BJCSTR", 3_000_000 * 1e18, 0, 35, 12, 24, 0);
+            TokenomicSetting(address(0), "BJCStrategic", "BJCSTR", 3_000_000 * 1e18, 0, 35 * 1e6, 12, 24, 0);
         tokenomicSettings[TokenomicType.Seed] =
-            TokenomicSetting(address(0), "BJCSeed", "BJCSEED", 4_000_000 * 1e18, 0, 45, 12, 24, 0);
+            TokenomicSetting(address(0), "BJCSeed", "BJCSEED", 4_000_000 * 1e18, 0, 45 * 1e6, 12, 24, 0);
         tokenomicSettings[TokenomicType.PrivateSale] =
-            TokenomicSetting(address(0), "BJCPrivateSale", "BJCPRI", 6_000_000 * 1e18, 0, 55, 12, 28, 5);
+            TokenomicSetting(address(0), "BJCPrivateSale", "BJCPRI", 6_000_000 * 1e18, 0, 55 * 1e6, 12, 28, 5);
         tokenomicSettings[TokenomicType.IDO] =
-            TokenomicSetting(address(0), "BJCIDO", "BJCIDO", 5_000_000 * 1e18, 0, 65, 6, 30, 15);
+            TokenomicSetting(address(0), "BJCIDO", "BJCIDO", 5_000_000 * 1e18, 0, 65 * 1e6, 6, 30, 15);
         tokenomicSettings[TokenomicType.PublicSale] =
-            TokenomicSetting(address(0), "BJCPublicSale", "BJCPUB", 15_000_000 * 1e18, 0, 75, 9, 24, 5);
+            TokenomicSetting(address(0), "BJCPublicSale", "BJCPUB", 15_000_000 * 1e18, 0, 75 * 1e6, 9, 24, 5);
         tokenomicSettings[TokenomicType.Advisors] =
-            TokenomicSetting(address(0), "BJCAdvisors", "BJCADV", 1_500_000 * 1e18, 0, 75, 12, 36, 3);
+            TokenomicSetting(address(0), "BJCAdvisors", "BJCADV", 1_500_000 * 1e18, 0, 75 * 1e6, 12, 36, 3);
         tokenomicSettings[TokenomicType.Team] =
-            TokenomicSetting(address(0), "BJCTeam", "BJCTEAM", 4_500_000 * 1e18, 0, 75, 24, 24, 5);
+            TokenomicSetting(address(0), "BJCTeam", "BJCTEAM", 4_500_000 * 1e18, 0, 75 * 1e6, 24, 24, 5);
         tokenomicSettings[TokenomicType.FutureTeam] =
-            TokenomicSetting(address(0), "BJCFutureTeam", "BJCFUT", 5_000_000 * 1e18, 0, 75, 12, 24, 0);
+            TokenomicSetting(address(0), "BJCFutureTeam", "BJCFUT", 5_000_000 * 1e18, 0, 75 * 1e6, 12, 24, 0);
         tokenomicSettings[TokenomicType.Incentives] =
-            TokenomicSetting(address(0), "BJCIncentives", "BJCINC", 11_000_000 * 1e18, 0, 75, 0, 18, 15);
+            TokenomicSetting(address(0), "BJCIncentives", "BJCINC", 11_000_000 * 1e18, 0, 75 * 1e6, 0, 18, 15);
         tokenomicSettings[TokenomicType.Liquidity] =
-            TokenomicSetting(address(0), "BJCLiquidity", "BJCLIQ", 15_000_000 * 1e18, 0, 75, 0, 18, 25);
+            TokenomicSetting(address(0), "BJCLiquidity", "BJCLIQ", 15_000_000 * 1e18, 0, 75 * 1e6, 0, 18, 25);
         tokenomicSettings[TokenomicType.Ecosystem] =
-            TokenomicSetting(address(0), "BJCEcosystem", "BJCECO", 15_000_000 * 1e18, 0, 75, 0, 12, 10);
+            TokenomicSetting(address(0), "BJCEcosystem", "BJCECO", 15_000_000 * 1e18, 0, 75 * 1e6, 0, 12, 10);
         tokenomicSettings[TokenomicType.Loyalty] =
-            TokenomicSetting(address(0), "BJCLoyalty", "BJCLOY", 15_000_000 * 1e18, 0, 75, 0, 48, 0);
+            TokenomicSetting(address(0), "BJCLoyalty", "BJCLOY", 15_000_000 * 1e18, 0, 75 * 1e6, 0, 48, 0);
     }
 
     /**

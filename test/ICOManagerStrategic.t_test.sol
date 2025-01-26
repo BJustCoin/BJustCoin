@@ -18,7 +18,7 @@ contract ICOManagerStrategic_test is Test {
     ICOManagerTestScript testScript;
     uint256 gas = 242194;
     //icoManager.MIN_SOLD_VOLUME
-    uint256 private constant MIN_SOLD_VOLUME = 1000; //10$
+    uint256 private constant MIN_SOLD_VOLUME = 10 * 1e8; //10$
 
     function setUp() public {
         icoManager = new ICOManager();
@@ -28,24 +28,24 @@ contract ICOManagerStrategic_test is Test {
     }
 
     function getEthCount(uint256 buyUSD) private view returns (uint256) {
-        return uint256(buyUSD * 1e18 / uint256(icoManager.getRate()));
+        return uint256(buyUSD * 1e18 / icoManager.getRate());
     }
 
     //Покупка токенов меньше минимальной покупки
     function test_StrategicToken_minSoldVolume() public {
         uint256 sendEth = getEthCount(MIN_SOLD_VOLUME - 1);
         icoManager.whitelist(ALICE, TokenomicType.Strategic, true);
-        startHoax(ALICE, 1 ether);
+        startHoax(ALICE, 1000 ether);
         vm.expectRevert(ICOManager.MinSoldError.selector);
         icoManager.buyStrategicToken{value: sendEth + gas}();
     }
 
     //Покупка токенов, для случая когда их недостаточно (цена по 1$ за токен)
     function test_StrategicToken_maxusd() public {
-        uint256 sendEth = getEthCount(testScript.startParams.maxTokenCount) / 1e16; //uint256(testScript.startParams.maxTokenCount / uint256(_oracle.getLatestPrice())) * 1e2;
+        uint256 sendEth = getEthCount(testScript.startParams.maxTokenCount * 1e8); //uint256(testScript.startParams.maxTokenCount / uint256(_oracle.getLatestPrice())) * 1e2;
         icoManager.whitelist(ALICE, TokenomicType.Strategic, true);
         console.log("sendEth = ", sendEth);
-        startHoax(ALICE, 10000 ether);
+        startHoax(ALICE, 10000000000 ether);
         vm.expectRevert(ICOManager.InsufficientFunds.selector);
         icoManager.buyStrategicToken{value: sendEth + gas}();
     }
@@ -283,7 +283,7 @@ contract ICOManagerStrategic_test is Test {
     function test_StrategicToken() public {
         uint256 sendEth = getEthCount(testScript.startParams.buyUSD); // uint256(testScript.startParams.buyUSD * 1e18 / uint256(_oracle.getLatestPrice()));
         icoManager.whitelist(ALICE, TokenomicType.Strategic, true);
-        startHoax(ALICE, 1 ether);
+        startHoax(ALICE, 10000 ether);
         icoManager.buyStrategicToken{value: sendEth + gas}();
 
         /**
