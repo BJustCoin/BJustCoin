@@ -34,7 +34,7 @@ contract ICOManagerTeam_test is Test {
     //Покупка токенов меньше минимальной покупки
     function test_TeamToken_minSoldVolume() public {
         uint256 sendEth = getEthCount(MIN_SOLD_VOLUME - 1);
-        icoManager.whitelist(ALICE, TokenomicType.Team, 10_000_000*1e18);
+        icoManager.whitelist(ALICE, TokenomicType.Team, 10_000_000 * 1e18);
         startHoax(ALICE, 1000 ether);
         vm.expectRevert(ICOManager.MinSoldError.selector);
         icoManager.buyTeamToken{value: sendEth + gas}();
@@ -43,7 +43,7 @@ contract ICOManagerTeam_test is Test {
     //Покупка токенов, для случая когда их недостаточно (цена по 1$ за токен)
     function test_TeamToken_maxusd() public {
         uint256 sendEth = getEthCount(testScript.startParams.maxTokenCount * 1e8); //uint256(testScript.startParams.maxTokenCount / uint256(_oracle.getLatestPrice())) * 1e2;
-        icoManager.whitelist(ALICE, TokenomicType.Team, 10_000_000*1e18);
+        icoManager.whitelist(ALICE, TokenomicType.Team, 10_000_000 * 1e18);
         console.log("sendEth = ", sendEth);
         startHoax(ALICE, 10000000000 ether);
         vm.expectRevert(ICOManager.InsufficientFunds.selector);
@@ -282,7 +282,7 @@ contract ICOManagerTeam_test is Test {
 
     function test_TeamToken() public {
         uint256 sendEth = getEthCount(testScript.startParams.buyUSD); // uint256(testScript.startParams.buyUSD * 1e18 / uint256(_oracle.getLatestPrice()));
-        icoManager.whitelist(ALICE, TokenomicType.Team, 10_000_000*1e18);
+        icoManager.whitelist(ALICE, TokenomicType.Team, 10_000_000 * 1e18);
         uint256 startTimeStamp = block.timestamp;
         startHoax(ALICE, 10000 ether);
         vm.warp(block.timestamp + 15 days);

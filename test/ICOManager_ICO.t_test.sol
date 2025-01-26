@@ -36,11 +36,11 @@ contract ICOManagerICO_test is Test {
         testScriptIDO = _icoManagerConst.InitIDOData();
         testScriptPublicSale = _icoManagerConst.InitPublicSaleData();
 
-        icoManager.whitelist(ALICE, TokenomicType.Strategic, 10_000_000*1e18);
-        icoManager.whitelist(ALICE, TokenomicType.Seed, 10_000_000*1e18);
-        icoManager.whitelist(ALICE, TokenomicType.IDO, 10_000_000*1e18);
-        icoManager.whitelist(ALICE, TokenomicType.PrivateSale, 10_000_000*1e18);
-        icoManager.whitelist(ALICE, TokenomicType.PublicSale, 10_000_000*1e18);
+        icoManager.whitelist(ALICE, TokenomicType.Strategic, 10_000_000 * 1e18);
+        icoManager.whitelist(ALICE, TokenomicType.Seed, 10_000_000 * 1e18);
+        icoManager.whitelist(ALICE, TokenomicType.IDO, 10_000_000 * 1e18);
+        icoManager.whitelist(ALICE, TokenomicType.PrivateSale, 10_000_000 * 1e18);
+        icoManager.whitelist(ALICE, TokenomicType.PublicSale, 10_000_000 * 1e18);
     }
 
     function sendEth(uint256 buyUSD) private view returns (uint256) {

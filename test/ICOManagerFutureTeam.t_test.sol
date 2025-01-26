@@ -34,7 +34,7 @@ contract ICOManagerFutureTeam_test is Test {
     //Покупка токенов меньше минимальной покупки
     function test_FutureTeamToken_minSoldVolume() public {
         uint256 sendEth = getEthCount(MIN_SOLD_VOLUME - 1);
-        icoManager.whitelist(ALICE, TokenomicType.FutureTeam, 10_000_000*1e18);
+        icoManager.whitelist(ALICE, TokenomicType.FutureTeam, 10_000_000 * 1e18);
         startHoax(ALICE, 1000 ether);
         vm.expectRevert(ICOManager.MinSoldError.selector);
         icoManager.buyFutureTeamToken{value: sendEth + gas}();
@@ -43,7 +43,7 @@ contract ICOManagerFutureTeam_test is Test {
     //Покупка токенов, для случая когда их недостаточно (цена по 1$ за токен)
     function test_FutureTeamToken_maxusd() public {
         uint256 sendEth = getEthCount(testScript.startParams.maxTokenCount * 1e8);
-        icoManager.whitelist(ALICE, TokenomicType.FutureTeam, 10_000_000*1e18);
+        icoManager.whitelist(ALICE, TokenomicType.FutureTeam, 10_000_000 * 1e18);
         console.log("sendEth = ", sendEth);
         startHoax(ALICE, 10000000000 ether);
         vm.expectRevert(ICOManager.InsufficientFunds.selector);
@@ -281,7 +281,7 @@ contract ICOManagerFutureTeam_test is Test {
 
     function test_FutureTeamToken() public {
         uint256 sendEth = getEthCount(testScript.startParams.buyUSD);
-        icoManager.whitelist(ALICE, TokenomicType.FutureTeam, 10_000_000*1e18);
+        icoManager.whitelist(ALICE, TokenomicType.FutureTeam, 10_000_000 * 1e18);
         startHoax(ALICE, 10000 ether);
         icoManager.buyFutureTeamToken{value: sendEth + gas}();
 

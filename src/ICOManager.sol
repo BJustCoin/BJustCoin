@@ -407,13 +407,9 @@ contract ICOManager is Ownable2Step {
         }
     }
 
-    function whitelist(address _address, TokenomicType _tokenomicType, uint256 _count)
-        external
-        payable
-        onlyOwner
-    {        
+    function whitelist(address _address, TokenomicType _tokenomicType, uint256 _count) external payable onlyOwner {
         emit WhiteList(_address, _tokenomicType, _count);
-        whitelists[_address][_tokenomicType] = whitelists[_address][_tokenomicType] + _count;        
+        whitelists[_address][_tokenomicType] = whitelists[_address][_tokenomicType] + _count;
     }
 
     function batchTransfer(TokenomicType tokenomic, address[] calldata recipients, uint256[] calldata amount)
@@ -791,7 +787,7 @@ contract ICOManager is Ownable2Step {
             revert MinSoldError();
         }
         uint256 tokens = msg.value * rate / settings.price;
-        if(tokens > whitelists[msg.sender][_tokenomicType]){
+        if (tokens > whitelists[msg.sender][_tokenomicType]) {
             revert WhiteListTokenCount();
         }
         if (tokens > settings.maxTokenCount - settings.soldTokenCount) {
@@ -800,7 +796,7 @@ contract ICOManager is Ownable2Step {
         emit BuyToken(owner(), msg.sender, settings.simvolToken, tokens, rate);
         if (!_baseToken.approve(settings.stageToken, tokens)) revert NotApprove();
         VestingToken(settings.stageToken).mint(msg.sender, tokens);
-        settings.soldTokenCount += tokens;        
+        settings.soldTokenCount += tokens;
         whitelists[msg.sender][_tokenomicType] -= tokens;
     }
 
