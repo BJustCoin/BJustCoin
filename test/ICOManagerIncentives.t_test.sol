@@ -121,7 +121,7 @@ contract ICOManagerIncentives_test is Test {
         );
         assertEq(
             VestingToken(icoManager.incentivesToken()).availableBalanceOf(ALICE) / 1e18,
-            testScript.vesting033.availableBalance - 1,
+            testScript.vesting033.availableBalance,
             "(Vesting 0,33) BJC available"
         );
         assertEq(
@@ -147,7 +147,7 @@ contract ICOManagerIncentives_test is Test {
         );
         assertEq(
             ERC20(icoManager.getBaseToken()).balanceOf(ALICE) / 1e18,
-            testScript.vestingClaim033.bjcBalance - 1,
+            testScript.vestingClaim033.bjcBalance,
             "(Vesting 0,33 claim) BJC tokens"
         );
         vm.warp(cliffTimeStamp + testScript.startParams.vestingPeriod050);
@@ -161,12 +161,12 @@ contract ICOManagerIncentives_test is Test {
         );
         assertEq(
             VestingToken(icoManager.incentivesToken()).availableBalanceOf(ALICE) / 1e18,
-            testScript.vesting050.availableBalance - 1,
+            testScript.vesting050.availableBalance,
             "(Vesting 0,5) BJC available"
         );
         assertEq(
             ERC20(icoManager.getBaseToken()).balanceOf(ALICE) / 1e18,
-            testScript.vesting050.bjcBalance - 1,
+            testScript.vesting050.bjcBalance,
             "(Vesting 0,5) BJC tokens"
         );
         if (VestingToken(icoManager.incentivesToken()).availableBalanceOf(ALICE) > 0) {
@@ -187,7 +187,7 @@ contract ICOManagerIncentives_test is Test {
         );
         assertEq(
             ERC20(icoManager.getBaseToken()).balanceOf(ALICE) / 1e18,
-            testScript.vestingClaim050.bjcBalance - 1,
+            testScript.vestingClaim050.bjcBalance,
             "(Vesting 0,5 claim) BJC tokens"
         );
 
@@ -202,12 +202,12 @@ contract ICOManagerIncentives_test is Test {
         );
         assertEq(
             VestingToken(icoManager.incentivesToken()).availableBalanceOf(ALICE) / 1e18,
-            testScript.vesting067.availableBalance - 1,
+            testScript.vesting067.availableBalance,
             "(Vesting 0,67) BJC available"
         );
         assertEq(
             ERC20(icoManager.getBaseToken()).balanceOf(ALICE) / 1e18,
-            testScript.vesting067.bjcBalance - 1,
+            testScript.vesting067.bjcBalance,
             "(Vesting 0,67) BJC tokens"
         );
 
@@ -229,7 +229,7 @@ contract ICOManagerIncentives_test is Test {
         );
         assertEq(
             ERC20(icoManager.getBaseToken()).balanceOf(ALICE) / 1e18,
-            testScript.vestingClaim067.bjcBalance - 1,
+            testScript.vestingClaim067.bjcBalance,
             "(Vesting 0,67 claim) BJC tokens"
         );
         vm.warp(cliffTimeStamp + testScript.startParams.vestingMonth * 365 days / 12);
@@ -244,12 +244,12 @@ contract ICOManagerIncentives_test is Test {
         );
         assertEq(
             VestingToken(icoManager.incentivesToken()).availableBalanceOf(ALICE) / 1e18,
-            testScript.endVesting.availableBalance - 1,
+            testScript.endVesting.availableBalance,
             "(Vesting end) BJC available"
         );
         assertEq(
             ERC20(icoManager.getBaseToken()).balanceOf(ALICE) / 1e18,
-            testScript.endVesting.bjcBalance - 1,
+            testScript.endVesting.bjcBalance,
             "(Vesting end) BJC tokens"
         );
 
@@ -272,7 +272,7 @@ contract ICOManagerIncentives_test is Test {
         );
         assertEq(
             ERC20(icoManager.getBaseToken()).balanceOf(ALICE) / 1e18,
-            testScript.endVestingClaim.bjcBalance - 1,
+            testScript.endVestingClaim.bjcBalance,
             "(Vesting end claim) BJC tokens"
         );
 

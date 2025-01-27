@@ -103,36 +103,36 @@ contract ICOManagerConst {
         startParams.symbolToken = "BJCSEED";
         startParams.maxTokenCount = 4_000_000;
         startParams.price = 45 * 1e6;
-        startParams.cliffMonth = 12;
+        startParams.cliffMonth = 6;
         startParams.vestingMonth = 24;
-        startParams.unlockTokensPercent = 0;
-        startParams.buyUSD = 135 * 1e8;
+        startParams.unlockTokensPercent = 15;
+        startParams.buyUSD = 270 * 1e8;
         startParams.vestingPeriod033 = (startParams.vestingMonth * 365 days) / (12 * 3);
         startParams.vestingPeriod050 = (startParams.vestingMonth * 365 days) / (12 * 2);
         startParams.vestingPeriod067 = (startParams.vestingMonth * 365 days * 2) / (12 * 3);
 
         ICOManagerTestTimePoint memory buyToken =
-            ICOManagerTestTimePoint({stageTokenBalance: 300, availableBalance: 0, bjcBalance: 0});
+            ICOManagerTestTimePoint({stageTokenBalance: 600, availableBalance: 0, bjcBalance: 0});
         ICOManagerTestTimePoint memory endLess =
-            ICOManagerTestTimePoint({stageTokenBalance: 300, availableBalance: 0, bjcBalance: 0});
+            ICOManagerTestTimePoint({stageTokenBalance: 600, availableBalance: 90, bjcBalance: 0});
         ICOManagerTestTimePoint memory endLessClaim =
-            ICOManagerTestTimePoint({stageTokenBalance: 300, availableBalance: 0, bjcBalance: 0});
+            ICOManagerTestTimePoint({stageTokenBalance: 510, availableBalance: 0, bjcBalance: 90});
         ICOManagerTestTimePoint memory vesting033 =
-            ICOManagerTestTimePoint({stageTokenBalance: 300, availableBalance: 100, bjcBalance: 0});
+            ICOManagerTestTimePoint({stageTokenBalance: 510, availableBalance: 170, bjcBalance: 0});
         ICOManagerTestTimePoint memory vestingClaim033 =
-            ICOManagerTestTimePoint({stageTokenBalance: 200, availableBalance: 0, bjcBalance: 100});
+            ICOManagerTestTimePoint({stageTokenBalance: 340, availableBalance: 0, bjcBalance: 260});
         ICOManagerTestTimePoint memory vesting050 =
-            ICOManagerTestTimePoint({stageTokenBalance: 200, availableBalance: 50, bjcBalance: 100});
+            ICOManagerTestTimePoint({stageTokenBalance: 340, availableBalance: 85, bjcBalance: 260});
         ICOManagerTestTimePoint memory vestingClaim050 =
-            ICOManagerTestTimePoint({stageTokenBalance: 150, availableBalance: 0, bjcBalance: 150});
+            ICOManagerTestTimePoint({stageTokenBalance: 255, availableBalance: 0, bjcBalance: 345});
         ICOManagerTestTimePoint memory vesting067 =
-            ICOManagerTestTimePoint({stageTokenBalance: 150, availableBalance: 50, bjcBalance: 150});
+            ICOManagerTestTimePoint({stageTokenBalance: 255, availableBalance: 85, bjcBalance: 345});
         ICOManagerTestTimePoint memory vestingClaim067 =
-            ICOManagerTestTimePoint({stageTokenBalance: 100, availableBalance: 0, bjcBalance: 200});
+            ICOManagerTestTimePoint({stageTokenBalance: 170, availableBalance: 0, bjcBalance: 430});
         ICOManagerTestTimePoint memory endVesting =
-            ICOManagerTestTimePoint({stageTokenBalance: 100, availableBalance: 100, bjcBalance: 200});
+            ICOManagerTestTimePoint({stageTokenBalance: 170, availableBalance: 170, bjcBalance: 430});
         ICOManagerTestTimePoint memory endVestingClaim =
-            ICOManagerTestTimePoint({stageTokenBalance: 0, availableBalance: 0, bjcBalance: 300});
+            ICOManagerTestTimePoint({stageTokenBalance: 0, availableBalance: 0, bjcBalance: 600});
 
         result.startParams = startParams;
         result.buyToken = buyToken;
@@ -167,23 +167,23 @@ contract ICOManagerConst {
         ICOManagerTestTimePoint memory buyToken =
             ICOManagerTestTimePoint({stageTokenBalance: 600, availableBalance: 0, bjcBalance: 0});
         ICOManagerTestTimePoint memory endLess =
-            ICOManagerTestTimePoint({stageTokenBalance: 600, availableBalance: 30, bjcBalance: 0});
+            ICOManagerTestTimePoint({stageTokenBalance: 600, availableBalance: 180, bjcBalance: 0});
         ICOManagerTestTimePoint memory endLessClaim =
-            ICOManagerTestTimePoint({stageTokenBalance: 570, availableBalance: 0, bjcBalance: 30});
+            ICOManagerTestTimePoint({stageTokenBalance: 420, availableBalance: 0, bjcBalance: 180});
         ICOManagerTestTimePoint memory vesting033 =
-            ICOManagerTestTimePoint({stageTokenBalance: 570, availableBalance: 190, bjcBalance: 30});
+            ICOManagerTestTimePoint({stageTokenBalance: 420, availableBalance: 140, bjcBalance: 180});
         ICOManagerTestTimePoint memory vestingClaim033 =
-            ICOManagerTestTimePoint({stageTokenBalance: 380, availableBalance: 0, bjcBalance: 220});
+            ICOManagerTestTimePoint({stageTokenBalance: 280, availableBalance: 0, bjcBalance: 320});
         ICOManagerTestTimePoint memory vesting050 =
-            ICOManagerTestTimePoint({stageTokenBalance: 380, availableBalance: 95, bjcBalance: 220});
+            ICOManagerTestTimePoint({stageTokenBalance: 280, availableBalance: 70, bjcBalance: 320});
         ICOManagerTestTimePoint memory vestingClaim050 =
-            ICOManagerTestTimePoint({stageTokenBalance: 285, availableBalance: 0, bjcBalance: 315});
+            ICOManagerTestTimePoint({stageTokenBalance: 210, availableBalance: 0, bjcBalance: 390});
         ICOManagerTestTimePoint memory vesting067 =
-            ICOManagerTestTimePoint({stageTokenBalance: 285, availableBalance: 95, bjcBalance: 315});
+            ICOManagerTestTimePoint({stageTokenBalance: 210, availableBalance: 70, bjcBalance: 390});
         ICOManagerTestTimePoint memory vestingClaim067 =
-            ICOManagerTestTimePoint({stageTokenBalance: 190, availableBalance: 0, bjcBalance: 410});
+            ICOManagerTestTimePoint({stageTokenBalance: 140, availableBalance: 0, bjcBalance: 460});
         ICOManagerTestTimePoint memory endVesting =
-            ICOManagerTestTimePoint({stageTokenBalance: 190, availableBalance: 190, bjcBalance: 410});
+            ICOManagerTestTimePoint({stageTokenBalance: 140, availableBalance: 140, bjcBalance: 460});
         ICOManagerTestTimePoint memory endVestingClaim =
             ICOManagerTestTimePoint({stageTokenBalance: 0, availableBalance: 0, bjcBalance: 600});
 
@@ -209,34 +209,34 @@ contract ICOManagerConst {
         startParams.symbolToken = "BJCIDO";
         startParams.maxTokenCount = 5_000_000;
         startParams.price = 65 * 1e6;
-        startParams.cliffMonth = 6;
-        startParams.vestingMonth = 30;
-        startParams.unlockTokensPercent = 15;
+        startParams.cliffMonth = 0;
+        startParams.vestingMonth = 0;
+        startParams.unlockTokensPercent = 0;
         startParams.buyUSD = 390 * 1e8;
         startParams.vestingPeriod033 = (startParams.vestingMonth * 365 days) / (12 * 3);
         startParams.vestingPeriod050 = (startParams.vestingMonth * 365 days) / (12 * 2);
         startParams.vestingPeriod067 = (startParams.vestingMonth * 365 days * 2) / (12 * 3);
 
         ICOManagerTestTimePoint memory buyToken =
-            ICOManagerTestTimePoint({stageTokenBalance: 600, availableBalance: 0, bjcBalance: 0});
+            ICOManagerTestTimePoint({stageTokenBalance: 600, availableBalance: 600, bjcBalance: 0});
         ICOManagerTestTimePoint memory endLess =
-            ICOManagerTestTimePoint({stageTokenBalance: 600, availableBalance: 90, bjcBalance: 0});
+            ICOManagerTestTimePoint({stageTokenBalance: 600, availableBalance: 600, bjcBalance: 600});
         ICOManagerTestTimePoint memory endLessClaim =
-            ICOManagerTestTimePoint({stageTokenBalance: 510, availableBalance: 0, bjcBalance: 90});
+            ICOManagerTestTimePoint({stageTokenBalance: 0, availableBalance: 0, bjcBalance: 600});
         ICOManagerTestTimePoint memory vesting033 =
-            ICOManagerTestTimePoint({stageTokenBalance: 510, availableBalance: 170, bjcBalance: 90});
+            ICOManagerTestTimePoint({stageTokenBalance: 0, availableBalance: 0, bjcBalance: 600});
         ICOManagerTestTimePoint memory vestingClaim033 =
-            ICOManagerTestTimePoint({stageTokenBalance: 340, availableBalance: 0, bjcBalance: 260});
+            ICOManagerTestTimePoint({stageTokenBalance: 0, availableBalance: 0, bjcBalance: 600});
         ICOManagerTestTimePoint memory vesting050 =
-            ICOManagerTestTimePoint({stageTokenBalance: 340, availableBalance: 85, bjcBalance: 260});
+            ICOManagerTestTimePoint({stageTokenBalance: 0, availableBalance: 0, bjcBalance: 600});
         ICOManagerTestTimePoint memory vestingClaim050 =
-            ICOManagerTestTimePoint({stageTokenBalance: 255, availableBalance: 0, bjcBalance: 345});
+            ICOManagerTestTimePoint({stageTokenBalance: 0, availableBalance: 0, bjcBalance: 600});
         ICOManagerTestTimePoint memory vesting067 =
-            ICOManagerTestTimePoint({stageTokenBalance: 255, availableBalance: 85, bjcBalance: 345});
+            ICOManagerTestTimePoint({stageTokenBalance: 0, availableBalance: 0, bjcBalance: 600});
         ICOManagerTestTimePoint memory vestingClaim067 =
-            ICOManagerTestTimePoint({stageTokenBalance: 170, availableBalance: 0, bjcBalance: 430});
+            ICOManagerTestTimePoint({stageTokenBalance: 0, availableBalance: 0, bjcBalance: 600});
         ICOManagerTestTimePoint memory endVesting =
-            ICOManagerTestTimePoint({stageTokenBalance: 170, availableBalance: 170, bjcBalance: 430});
+            ICOManagerTestTimePoint({stageTokenBalance: 0, availableBalance: 0, bjcBalance: 600});
         ICOManagerTestTimePoint memory endVestingClaim =
             ICOManagerTestTimePoint({stageTokenBalance: 0, availableBalance: 0, bjcBalance: 600});
 
@@ -271,25 +271,25 @@ contract ICOManagerConst {
         startParams.vestingPeriod067 = (startParams.vestingMonth * 365 days * 2) / (12 * 3);
 
         ICOManagerTestTimePoint memory buyToken =
-            ICOManagerTestTimePoint({stageTokenBalance: 600, availableBalance: 0, bjcBalance: 0});
+            ICOManagerTestTimePoint({stageTokenBalance: 600, availableBalance: 600, bjcBalance: 0});
         ICOManagerTestTimePoint memory endLess =
-            ICOManagerTestTimePoint({stageTokenBalance: 600, availableBalance: 30, bjcBalance: 0});
+            ICOManagerTestTimePoint({stageTokenBalance: 600, availableBalance: 600, bjcBalance: 0});
         ICOManagerTestTimePoint memory endLessClaim =
-            ICOManagerTestTimePoint({stageTokenBalance: 570, availableBalance: 0, bjcBalance: 30});
+            ICOManagerTestTimePoint({stageTokenBalance: 0, availableBalance: 0, bjcBalance: 600});
         ICOManagerTestTimePoint memory vesting033 =
-            ICOManagerTestTimePoint({stageTokenBalance: 570, availableBalance: 190, bjcBalance: 30});
+            ICOManagerTestTimePoint({stageTokenBalance: 0, availableBalance: 0, bjcBalance: 600});
         ICOManagerTestTimePoint memory vestingClaim033 =
-            ICOManagerTestTimePoint({stageTokenBalance: 380, availableBalance: 0, bjcBalance: 220});
+            ICOManagerTestTimePoint({stageTokenBalance: 0, availableBalance: 0, bjcBalance: 600});
         ICOManagerTestTimePoint memory vesting050 =
-            ICOManagerTestTimePoint({stageTokenBalance: 380, availableBalance: 95, bjcBalance: 220});
+            ICOManagerTestTimePoint({stageTokenBalance: 0, availableBalance: 0, bjcBalance: 600});
         ICOManagerTestTimePoint memory vestingClaim050 =
-            ICOManagerTestTimePoint({stageTokenBalance: 285, availableBalance: 0, bjcBalance: 315});
+            ICOManagerTestTimePoint({stageTokenBalance: 0, availableBalance: 0, bjcBalance: 600});
         ICOManagerTestTimePoint memory vesting067 =
-            ICOManagerTestTimePoint({stageTokenBalance: 285, availableBalance: 95, bjcBalance: 315});
+            ICOManagerTestTimePoint({stageTokenBalance: 0, availableBalance: 0, bjcBalance: 600});
         ICOManagerTestTimePoint memory vestingClaim067 =
-            ICOManagerTestTimePoint({stageTokenBalance: 190, availableBalance: 0, bjcBalance: 410});
+            ICOManagerTestTimePoint({stageTokenBalance: 0, availableBalance: 0, bjcBalance: 600});
         ICOManagerTestTimePoint memory endVesting =
-            ICOManagerTestTimePoint({stageTokenBalance: 190, availableBalance: 190, bjcBalance: 410});
+            ICOManagerTestTimePoint({stageTokenBalance: 0, availableBalance: 0, bjcBalance: 600});
         ICOManagerTestTimePoint memory endVestingClaim =
             ICOManagerTestTimePoint({stageTokenBalance: 0, availableBalance: 0, bjcBalance: 600});
 
@@ -315,34 +315,34 @@ contract ICOManagerConst {
         startParams.symbolToken = "BJCADV";
         startParams.maxTokenCount = 1_500_000;
         startParams.price = 75 * 1e6;
-        startParams.cliffMonth = 12;
-        startParams.vestingMonth = 36;
-        startParams.unlockTokensPercent = 3;
+        startParams.cliffMonth = 0;
+        startParams.vestingMonth = 24;
+        startParams.unlockTokensPercent = 30;
         startParams.buyUSD = 450 * 1e8;
         startParams.vestingPeriod033 = (startParams.vestingMonth * 365 days) / (12 * 3);
         startParams.vestingPeriod050 = (startParams.vestingMonth * 365 days) / (12 * 2);
         startParams.vestingPeriod067 = (startParams.vestingMonth * 365 days * 2) / (12 * 3);
 
         ICOManagerTestTimePoint memory buyToken =
-            ICOManagerTestTimePoint({stageTokenBalance: 600, availableBalance: 0, bjcBalance: 0});
+            ICOManagerTestTimePoint({stageTokenBalance: 600, availableBalance: 180, bjcBalance: 0});
         ICOManagerTestTimePoint memory endLess =
-            ICOManagerTestTimePoint({stageTokenBalance: 600, availableBalance: 18, bjcBalance: 0});
+            ICOManagerTestTimePoint({stageTokenBalance: 600, availableBalance: 180, bjcBalance: 0});
         ICOManagerTestTimePoint memory endLessClaim =
-            ICOManagerTestTimePoint({stageTokenBalance: 582, availableBalance: 0, bjcBalance: 18});
+            ICOManagerTestTimePoint({stageTokenBalance: 420, availableBalance: 0, bjcBalance: 180});
         ICOManagerTestTimePoint memory vesting033 =
-            ICOManagerTestTimePoint({stageTokenBalance: 582, availableBalance: 194, bjcBalance: 18});
+            ICOManagerTestTimePoint({stageTokenBalance: 420, availableBalance: 140, bjcBalance: 180});
         ICOManagerTestTimePoint memory vestingClaim033 =
-            ICOManagerTestTimePoint({stageTokenBalance: 388, availableBalance: 0, bjcBalance: 212});
+            ICOManagerTestTimePoint({stageTokenBalance: 280, availableBalance: 0, bjcBalance: 320});
         ICOManagerTestTimePoint memory vesting050 =
-            ICOManagerTestTimePoint({stageTokenBalance: 388, availableBalance: 97, bjcBalance: 212});
+            ICOManagerTestTimePoint({stageTokenBalance: 280, availableBalance: 70, bjcBalance: 320});
         ICOManagerTestTimePoint memory vestingClaim050 =
-            ICOManagerTestTimePoint({stageTokenBalance: 291, availableBalance: 0, bjcBalance: 309});
+            ICOManagerTestTimePoint({stageTokenBalance: 210, availableBalance: 0, bjcBalance: 390});
         ICOManagerTestTimePoint memory vesting067 =
-            ICOManagerTestTimePoint({stageTokenBalance: 291, availableBalance: 97, bjcBalance: 309});
+            ICOManagerTestTimePoint({stageTokenBalance: 210, availableBalance: 70, bjcBalance: 390});
         ICOManagerTestTimePoint memory vestingClaim067 =
-            ICOManagerTestTimePoint({stageTokenBalance: 194, availableBalance: 0, bjcBalance: 406});
+            ICOManagerTestTimePoint({stageTokenBalance: 140, availableBalance: 0, bjcBalance: 460});
         ICOManagerTestTimePoint memory endVesting =
-            ICOManagerTestTimePoint({stageTokenBalance: 194, availableBalance: 194, bjcBalance: 406});
+            ICOManagerTestTimePoint({stageTokenBalance: 140, availableBalance: 140, bjcBalance: 460});
         ICOManagerTestTimePoint memory endVestingClaim =
             ICOManagerTestTimePoint({stageTokenBalance: 0, availableBalance: 0, bjcBalance: 600});
 
@@ -368,34 +368,34 @@ contract ICOManagerConst {
         startParams.symbolToken = "BJCTEAM";
         startParams.maxTokenCount = 4_500_000;
         startParams.price = 75 * 1e6;
-        startParams.cliffMonth = 24;
+        startParams.cliffMonth = 0;
         startParams.vestingMonth = 24;
-        startParams.unlockTokensPercent = 5;
+        startParams.unlockTokensPercent = 30;
         startParams.buyUSD = 450 * 1e8;
         startParams.vestingPeriod033 = (startParams.vestingMonth * 365 days) / (12 * 3);
         startParams.vestingPeriod050 = (startParams.vestingMonth * 365 days) / (12 * 2);
         startParams.vestingPeriod067 = (startParams.vestingMonth * 365 days * 2) / (12 * 3);
 
         ICOManagerTestTimePoint memory buyToken =
-            ICOManagerTestTimePoint({stageTokenBalance: 600, availableBalance: 0, bjcBalance: 0});
+            ICOManagerTestTimePoint({stageTokenBalance: 600, availableBalance: 180, bjcBalance: 0});
         ICOManagerTestTimePoint memory endLess =
-            ICOManagerTestTimePoint({stageTokenBalance: 600, availableBalance: 30, bjcBalance: 0});
+            ICOManagerTestTimePoint({stageTokenBalance: 600, availableBalance: 180, bjcBalance: 0});
         ICOManagerTestTimePoint memory endLessClaim =
-            ICOManagerTestTimePoint({stageTokenBalance: 570, availableBalance: 0, bjcBalance: 30});
+            ICOManagerTestTimePoint({stageTokenBalance: 420, availableBalance: 0, bjcBalance: 180});
         ICOManagerTestTimePoint memory vesting033 =
-            ICOManagerTestTimePoint({stageTokenBalance: 570, availableBalance: 190, bjcBalance: 30});
+            ICOManagerTestTimePoint({stageTokenBalance: 420, availableBalance: 140, bjcBalance: 180});
         ICOManagerTestTimePoint memory vestingClaim033 =
-            ICOManagerTestTimePoint({stageTokenBalance: 380, availableBalance: 0, bjcBalance: 220});
+            ICOManagerTestTimePoint({stageTokenBalance: 280, availableBalance: 0, bjcBalance: 320});
         ICOManagerTestTimePoint memory vesting050 =
-            ICOManagerTestTimePoint({stageTokenBalance: 380, availableBalance: 95, bjcBalance: 220});
+            ICOManagerTestTimePoint({stageTokenBalance: 280, availableBalance: 70, bjcBalance: 320});
         ICOManagerTestTimePoint memory vestingClaim050 =
-            ICOManagerTestTimePoint({stageTokenBalance: 285, availableBalance: 0, bjcBalance: 315});
+            ICOManagerTestTimePoint({stageTokenBalance: 210, availableBalance: 0, bjcBalance: 390});
         ICOManagerTestTimePoint memory vesting067 =
-            ICOManagerTestTimePoint({stageTokenBalance: 285, availableBalance: 95, bjcBalance: 315});
+            ICOManagerTestTimePoint({stageTokenBalance: 210, availableBalance: 70, bjcBalance: 390});
         ICOManagerTestTimePoint memory vestingClaim067 =
-            ICOManagerTestTimePoint({stageTokenBalance: 190, availableBalance: 0, bjcBalance: 410});
+            ICOManagerTestTimePoint({stageTokenBalance: 140, availableBalance: 0, bjcBalance: 460});
         ICOManagerTestTimePoint memory endVesting =
-            ICOManagerTestTimePoint({stageTokenBalance: 190, availableBalance: 190, bjcBalance: 410});
+            ICOManagerTestTimePoint({stageTokenBalance: 140, availableBalance: 140, bjcBalance: 460});
         ICOManagerTestTimePoint memory endVestingClaim =
             ICOManagerTestTimePoint({stageTokenBalance: 0, availableBalance: 0, bjcBalance: 600});
 
@@ -474,8 +474,8 @@ contract ICOManagerConst {
         startParams.symbolToken = "BJCINC";
         startParams.maxTokenCount = 11_000_000;
         startParams.price = 75 * 1e6;
-        startParams.cliffMonth = 0;
-        startParams.vestingMonth = 18;
+        startParams.cliffMonth = 18;
+        startParams.vestingMonth = 15;
         startParams.unlockTokensPercent = 15;
         startParams.buyUSD = 450 * 1e8;
         startParams.vestingPeriod033 = (startParams.vestingMonth * 365 days) / (12 * 3);
@@ -483,7 +483,7 @@ contract ICOManagerConst {
         startParams.vestingPeriod067 = (startParams.vestingMonth * 365 days * 2) / (12 * 3);
 
         ICOManagerTestTimePoint memory buyToken =
-            ICOManagerTestTimePoint({stageTokenBalance: 600, availableBalance: 90, bjcBalance: 0});
+            ICOManagerTestTimePoint({stageTokenBalance: 600, availableBalance: 0, bjcBalance: 0});
         ICOManagerTestTimePoint memory endLess =
             ICOManagerTestTimePoint({stageTokenBalance: 600, availableBalance: 90, bjcBalance: 0});
         ICOManagerTestTimePoint memory endLessClaim =
@@ -528,33 +528,33 @@ contract ICOManagerConst {
         startParams.maxTokenCount = 15_000_000;
         startParams.price = 75 * 1e6;
         startParams.cliffMonth = 0;
-        startParams.vestingMonth = 18;
-        startParams.unlockTokensPercent = 25;
+        startParams.vestingMonth = 0;
+        startParams.unlockTokensPercent = 0;
         startParams.buyUSD = 450 * 1e8;
         startParams.vestingPeriod033 = (startParams.vestingMonth * 365 days) / (12 * 3);
         startParams.vestingPeriod050 = (startParams.vestingMonth * 365 days) / (12 * 2);
         startParams.vestingPeriod067 = (startParams.vestingMonth * 365 days * 2) / (12 * 3);
 
         ICOManagerTestTimePoint memory buyToken =
-            ICOManagerTestTimePoint({stageTokenBalance: 600, availableBalance: 150, bjcBalance: 0});
+            ICOManagerTestTimePoint({stageTokenBalance: 600, availableBalance: 600, bjcBalance: 0});
         ICOManagerTestTimePoint memory endLess =
-            ICOManagerTestTimePoint({stageTokenBalance: 600, availableBalance: 150, bjcBalance: 0});
+            ICOManagerTestTimePoint({stageTokenBalance: 600, availableBalance: 600, bjcBalance: 0});
         ICOManagerTestTimePoint memory endLessClaim =
-            ICOManagerTestTimePoint({stageTokenBalance: 450, availableBalance: 0, bjcBalance: 150});
+            ICOManagerTestTimePoint({stageTokenBalance: 0, availableBalance: 0, bjcBalance: 600});
         ICOManagerTestTimePoint memory vesting033 =
-            ICOManagerTestTimePoint({stageTokenBalance: 450, availableBalance: 150, bjcBalance: 150});
+            ICOManagerTestTimePoint({stageTokenBalance: 0, availableBalance: 0, bjcBalance: 600});
         ICOManagerTestTimePoint memory vestingClaim033 =
-            ICOManagerTestTimePoint({stageTokenBalance: 300, availableBalance: 0, bjcBalance: 300});
+            ICOManagerTestTimePoint({stageTokenBalance: 0, availableBalance: 0, bjcBalance: 600});
         ICOManagerTestTimePoint memory vesting050 =
-            ICOManagerTestTimePoint({stageTokenBalance: 300, availableBalance: 75, bjcBalance: 300});
+            ICOManagerTestTimePoint({stageTokenBalance: 0, availableBalance: 0, bjcBalance: 600});
         ICOManagerTestTimePoint memory vestingClaim050 =
-            ICOManagerTestTimePoint({stageTokenBalance: 225, availableBalance: 0, bjcBalance: 375});
+            ICOManagerTestTimePoint({stageTokenBalance: 0, availableBalance: 0, bjcBalance: 600});
         ICOManagerTestTimePoint memory vesting067 =
-            ICOManagerTestTimePoint({stageTokenBalance: 225, availableBalance: 75, bjcBalance: 375});
+            ICOManagerTestTimePoint({stageTokenBalance: 0, availableBalance: 0, bjcBalance: 600});
         ICOManagerTestTimePoint memory vestingClaim067 =
-            ICOManagerTestTimePoint({stageTokenBalance: 150, availableBalance: 0, bjcBalance: 450});
+            ICOManagerTestTimePoint({stageTokenBalance: 0, availableBalance: 0, bjcBalance: 600});
         ICOManagerTestTimePoint memory endVesting =
-            ICOManagerTestTimePoint({stageTokenBalance: 150, availableBalance: 150, bjcBalance: 450});
+            ICOManagerTestTimePoint({stageTokenBalance: 0, availableBalance: 0, bjcBalance: 600});
         ICOManagerTestTimePoint memory endVestingClaim =
             ICOManagerTestTimePoint({stageTokenBalance: 0, availableBalance: 0, bjcBalance: 600});
 
@@ -580,36 +580,36 @@ contract ICOManagerConst {
         startParams.symbolToken = "BJCECO";
         startParams.maxTokenCount = 15_000_000;
         startParams.price = 75 * 1e6;
-        startParams.cliffMonth = 0;
-        startParams.vestingMonth = 12;
-        startParams.unlockTokensPercent = 10;
-        startParams.buyUSD = 225 * 1e8;
+        startParams.cliffMonth = 12;
+        startParams.vestingMonth = 24;
+        startParams.unlockTokensPercent = 15;
+        startParams.buyUSD = 450 * 1e8;
         startParams.vestingPeriod033 = (startParams.vestingMonth * 365 days) / (12 * 3);
         startParams.vestingPeriod050 = (startParams.vestingMonth * 365 days) / (12 * 2);
         startParams.vestingPeriod067 = (startParams.vestingMonth * 365 days * 2) / (12 * 3);
 
         ICOManagerTestTimePoint memory buyToken =
-            ICOManagerTestTimePoint({stageTokenBalance: 300, availableBalance: 30, bjcBalance: 0});
+            ICOManagerTestTimePoint({stageTokenBalance: 600, availableBalance: 0, bjcBalance: 0});
         ICOManagerTestTimePoint memory endLess =
-            ICOManagerTestTimePoint({stageTokenBalance: 300, availableBalance: 30, bjcBalance: 0});
+            ICOManagerTestTimePoint({stageTokenBalance: 600, availableBalance: 90, bjcBalance: 0});
         ICOManagerTestTimePoint memory endLessClaim =
-            ICOManagerTestTimePoint({stageTokenBalance: 270, availableBalance: 0, bjcBalance: 30});
+            ICOManagerTestTimePoint({stageTokenBalance: 510, availableBalance: 0, bjcBalance: 90});
         ICOManagerTestTimePoint memory vesting033 =
-            ICOManagerTestTimePoint({stageTokenBalance: 270, availableBalance: 90, bjcBalance: 30});
+            ICOManagerTestTimePoint({stageTokenBalance: 510, availableBalance: 170, bjcBalance: 90});
         ICOManagerTestTimePoint memory vestingClaim033 =
-            ICOManagerTestTimePoint({stageTokenBalance: 180, availableBalance: 0, bjcBalance: 120});
+            ICOManagerTestTimePoint({stageTokenBalance: 340, availableBalance: 0, bjcBalance: 260});
         ICOManagerTestTimePoint memory vesting050 =
-            ICOManagerTestTimePoint({stageTokenBalance: 180, availableBalance: 45, bjcBalance: 120});
+            ICOManagerTestTimePoint({stageTokenBalance: 340, availableBalance: 85, bjcBalance: 260});
         ICOManagerTestTimePoint memory vestingClaim050 =
-            ICOManagerTestTimePoint({stageTokenBalance: 135, availableBalance: 0, bjcBalance: 165});
+            ICOManagerTestTimePoint({stageTokenBalance: 255, availableBalance: 0, bjcBalance: 345});
         ICOManagerTestTimePoint memory vesting067 =
-            ICOManagerTestTimePoint({stageTokenBalance: 135, availableBalance: 45, bjcBalance: 165});
+            ICOManagerTestTimePoint({stageTokenBalance: 255, availableBalance: 85, bjcBalance: 345});
         ICOManagerTestTimePoint memory vestingClaim067 =
-            ICOManagerTestTimePoint({stageTokenBalance: 90, availableBalance: 0, bjcBalance: 210});
+            ICOManagerTestTimePoint({stageTokenBalance: 170, availableBalance: 0, bjcBalance: 430});
         ICOManagerTestTimePoint memory endVesting =
-            ICOManagerTestTimePoint({stageTokenBalance: 90, availableBalance: 90, bjcBalance: 210});
+            ICOManagerTestTimePoint({stageTokenBalance: 170, availableBalance: 170, bjcBalance: 430});
         ICOManagerTestTimePoint memory endVestingClaim =
-            ICOManagerTestTimePoint({stageTokenBalance: 0, availableBalance: 0, bjcBalance: 300});
+            ICOManagerTestTimePoint({stageTokenBalance: 0, availableBalance: 0, bjcBalance: 600});
 
         result.startParams = startParams;
         result.buyToken = buyToken;
@@ -634,33 +634,33 @@ contract ICOManagerConst {
         startParams.maxTokenCount = 15_000_000;
         startParams.price = 75 * 1e6;
         startParams.cliffMonth = 0;
-        startParams.vestingMonth = 48;
-        startParams.unlockTokensPercent = 0;
+        startParams.vestingMonth = 24;
+        startParams.unlockTokensPercent = 30;
         startParams.buyUSD = 225 * 1e8;
         startParams.vestingPeriod033 = (startParams.vestingMonth * 365 days) / (12 * 3);
         startParams.vestingPeriod050 = (startParams.vestingMonth * 365 days) / (12 * 2);
         startParams.vestingPeriod067 = (startParams.vestingMonth * 365 days * 2) / (12 * 3);
 
         ICOManagerTestTimePoint memory buyToken =
-            ICOManagerTestTimePoint({stageTokenBalance: 300, availableBalance: 3, bjcBalance: 0});
+            ICOManagerTestTimePoint({stageTokenBalance: 300, availableBalance: 90, bjcBalance: 0});
         ICOManagerTestTimePoint memory endLess =
-            ICOManagerTestTimePoint({stageTokenBalance: 300, availableBalance: 0, bjcBalance: 0});
+            ICOManagerTestTimePoint({stageTokenBalance: 300, availableBalance: 90, bjcBalance: 0});
         ICOManagerTestTimePoint memory endLessClaim =
-            ICOManagerTestTimePoint({stageTokenBalance: 300, availableBalance: 0, bjcBalance: 0});
+            ICOManagerTestTimePoint({stageTokenBalance: 210, availableBalance: 0, bjcBalance: 90});
         ICOManagerTestTimePoint memory vesting033 =
-            ICOManagerTestTimePoint({stageTokenBalance: 300, availableBalance: 100, bjcBalance: 0});
+            ICOManagerTestTimePoint({stageTokenBalance: 210, availableBalance: 70, bjcBalance: 90});
         ICOManagerTestTimePoint memory vestingClaim033 =
-            ICOManagerTestTimePoint({stageTokenBalance: 200, availableBalance: 0, bjcBalance: 100});
+            ICOManagerTestTimePoint({stageTokenBalance: 140, availableBalance: 0, bjcBalance: 160});
         ICOManagerTestTimePoint memory vesting050 =
-            ICOManagerTestTimePoint({stageTokenBalance: 200, availableBalance: 50, bjcBalance: 100});
+            ICOManagerTestTimePoint({stageTokenBalance: 140, availableBalance: 35, bjcBalance: 160});
         ICOManagerTestTimePoint memory vestingClaim050 =
-            ICOManagerTestTimePoint({stageTokenBalance: 150, availableBalance: 0, bjcBalance: 150});
+            ICOManagerTestTimePoint({stageTokenBalance: 105, availableBalance: 0, bjcBalance: 195});
         ICOManagerTestTimePoint memory vesting067 =
-            ICOManagerTestTimePoint({stageTokenBalance: 150, availableBalance: 50, bjcBalance: 150});
+            ICOManagerTestTimePoint({stageTokenBalance: 105, availableBalance: 35, bjcBalance: 195});
         ICOManagerTestTimePoint memory vestingClaim067 =
-            ICOManagerTestTimePoint({stageTokenBalance: 100, availableBalance: 0, bjcBalance: 200});
+            ICOManagerTestTimePoint({stageTokenBalance: 70, availableBalance: 0, bjcBalance: 230});
         ICOManagerTestTimePoint memory endVesting =
-            ICOManagerTestTimePoint({stageTokenBalance: 100, availableBalance: 100, bjcBalance: 200});
+            ICOManagerTestTimePoint({stageTokenBalance: 70, availableBalance: 70, bjcBalance: 230});
         ICOManagerTestTimePoint memory endVestingClaim =
             ICOManagerTestTimePoint({stageTokenBalance: 0, availableBalance: 0, bjcBalance: 300});
 

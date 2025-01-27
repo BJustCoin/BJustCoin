@@ -64,8 +64,8 @@ contract ICOManagerInitTest is Test {
 
         Vesting memory _vesting = icoManager.seedToken().getVestingSchedule();
         assertEq(_vesting.startTime, block.timestamp, "_vesting.startTime");
-        assertEq(_vesting.cliff, block.timestamp + 365 days, "_vesting.cliff");
-        assertEq(_vesting.initialUnlock, 0, "_vesting.initialUnlock");
+        assertEq(_vesting.cliff, block.timestamp + 365 days / 2, "_vesting.cliff");
+        assertEq(_vesting.initialUnlock, 15, "_vesting.initialUnlock");
         assertEq(_vesting.schedule.length, 24, "_vesting.schedule.length");
     }
     //endregion
@@ -87,9 +87,9 @@ contract ICOManagerInitTest is Test {
 
         Vesting memory _vesting = icoManager.privateSaleToken().getVestingSchedule();
         assertEq(_vesting.startTime, block.timestamp, "_vesting.startTime");
-        assertEq(_vesting.cliff, block.timestamp + 365 days, "_vesting.cliff");
-        assertEq(_vesting.initialUnlock, 5, "_vesting.initialUnlock");
-        assertEq(_vesting.schedule.length, 28, "_vesting.schedule.length");
+        assertEq(_vesting.cliff, block.timestamp + 365 days / 12 * 3, "_vesting.cliff");
+        assertEq(_vesting.initialUnlock, 30, "_vesting.initialUnlock");
+        assertEq(_vesting.schedule.length, 12, "_vesting.schedule.length");
     }
     //endregion
 
@@ -109,9 +109,9 @@ contract ICOManagerInitTest is Test {
 
         Vesting memory _vesting = icoManager.idoToken().getVestingSchedule();
         assertEq(_vesting.startTime, block.timestamp, "_vesting.startTime");
-        assertEq(_vesting.cliff, block.timestamp + (365 days / 2), "_vesting.cliff");
-        assertEq(_vesting.initialUnlock, 15, "_vesting.initialUnlock");
-        assertEq(_vesting.schedule.length, 30, "_vesting.schedule.length");
+        assertEq(_vesting.cliff, block.timestamp, "_vesting.cliff");
+        assertEq(_vesting.initialUnlock, 0, "_vesting.initialUnlock");
+        assertEq(_vesting.schedule.length, 1, "_vesting.schedule.length");
     }
     //endregion
 
@@ -134,9 +134,9 @@ contract ICOManagerInitTest is Test {
 
         Vesting memory _vesting = icoManager.publicSaleToken().getVestingSchedule();
         assertEq(_vesting.startTime, block.timestamp, "_vesting.startTime");
-        assertEq(_vesting.cliff, block.timestamp + (365 days * 3 / 4), "_vesting.cliff");
-        assertEq(_vesting.initialUnlock, 5, "_vesting.initialUnlock");
-        assertEq(_vesting.schedule.length, 24, "_vesting.schedule.length");
+        assertEq(_vesting.cliff, block.timestamp, "_vesting.cliff");
+        assertEq(_vesting.initialUnlock, 0, "_vesting.initialUnlock");
+        assertEq(_vesting.schedule.length, 1, "_vesting.schedule.length");
     }
     //endregion
 
@@ -154,9 +154,9 @@ contract ICOManagerInitTest is Test {
 
         Vesting memory _vesting = icoManager.advisorsToken().getVestingSchedule();
         assertEq(_vesting.startTime, block.timestamp, "_vesting.startTime");
-        assertEq(_vesting.cliff, block.timestamp + 365 days, "_vesting.cliff");
-        assertEq(_vesting.initialUnlock, 3, "_vesting.initialUnlock");
-        assertEq(_vesting.schedule.length, 36, "_vesting.schedule.length");
+        assertEq(_vesting.cliff, block.timestamp, "_vesting.cliff");
+        assertEq(_vesting.initialUnlock, 30, "_vesting.initialUnlock");
+        assertEq(_vesting.schedule.length, 24, "_vesting.schedule.length");
     }
     //endregion
 
@@ -172,8 +172,8 @@ contract ICOManagerInitTest is Test {
 
         Vesting memory _vesting = icoManager.teamToken().getVestingSchedule();
         assertEq(_vesting.startTime, block.timestamp, "_vesting.startTime");
-        assertEq(_vesting.cliff, block.timestamp + (365 days * 2), "_vesting.cliff");
-        assertEq(_vesting.initialUnlock, 5, "_vesting.initialUnlock");
+        assertEq(_vesting.cliff, block.timestamp, "_vesting.cliff");
+        assertEq(_vesting.initialUnlock, 30, "_vesting.initialUnlock");
         assertEq(_vesting.schedule.length, 24, "_vesting.schedule.length");
     }
     //endregion
@@ -212,9 +212,9 @@ contract ICOManagerInitTest is Test {
 
         Vesting memory _vesting = icoManager.incentivesToken().getVestingSchedule();
         assertEq(_vesting.startTime, block.timestamp, "_vesting.startTime");
-        assertEq(_vesting.cliff, block.timestamp, "_vesting.cliff");
+        assertEq(_vesting.cliff, block.timestamp + 365 days / 12 * 18, "_vesting.cliff");
         assertEq(_vesting.initialUnlock, 15, "_vesting.initialUnlock");
-        assertEq(_vesting.schedule.length, 18, "_vesting.schedule.length");
+        assertEq(_vesting.schedule.length, 15, "_vesting.schedule.length");
     }
     //endregion
 
@@ -231,8 +231,8 @@ contract ICOManagerInitTest is Test {
         Vesting memory _vesting = icoManager.liquidityToken().getVestingSchedule();
         assertEq(_vesting.startTime, block.timestamp, "_vesting.startTime");
         assertEq(_vesting.cliff, block.timestamp, "_vesting.cliff");
-        assertEq(_vesting.initialUnlock, 25, "_vesting.initialUnlock");
-        assertEq(_vesting.schedule.length, 18, "_vesting.schedule.length");
+        assertEq(_vesting.initialUnlock, 0, "_vesting.initialUnlock");
+        assertEq(_vesting.schedule.length, 1, "_vesting.schedule.length");
     }
     //endregion
 
@@ -250,9 +250,9 @@ contract ICOManagerInitTest is Test {
 
         Vesting memory _vesting = icoManager.ecosystemToken().getVestingSchedule();
         assertEq(_vesting.startTime, block.timestamp, "_vesting.startTime");
-        assertEq(_vesting.cliff, block.timestamp, "_vesting.cliff");
-        assertEq(_vesting.initialUnlock, 10, "_vesting.initialUnlock");
-        assertEq(_vesting.schedule.length, 12, "_vesting.schedule.length");
+        assertEq(_vesting.cliff, block.timestamp + 365 days, "_vesting.cliff");
+        assertEq(_vesting.initialUnlock, 15, "_vesting.initialUnlock");
+        assertEq(_vesting.schedule.length, 24, "_vesting.schedule.length");
     }
     //endregion
 
@@ -271,8 +271,8 @@ contract ICOManagerInitTest is Test {
         Vesting memory _vesting = icoManager.loyaltyToken().getVestingSchedule();
         assertEq(_vesting.startTime, block.timestamp, "_vesting.startTime");
         assertEq(_vesting.cliff, block.timestamp, "_vesting.cliff");
-        assertEq(_vesting.initialUnlock, 0, "_vesting.initialUnlock");
-        assertEq(_vesting.schedule.length, 48, "_vesting.schedule.length");
+        assertEq(_vesting.initialUnlock, 30, "_vesting.initialUnlock");
+        assertEq(_vesting.schedule.length, 24, "_vesting.schedule.length");
     }
     //endregion
 
@@ -290,6 +290,6 @@ contract ICOManagerInitTest is Test {
 
         Bjustcoin baseToken = Bjustcoin(icoManager.getBaseToken());
 
-        assertEq(baseToken.totalSupply(), 100_000_000 * 1e18 - 30_000_000 * 1e18, "baseToken.totalSupply");
+        assertEq(baseToken.totalSupply(), 100_000_000 * 1e18 - 35_000_000 * 1e18, "baseToken.totalSupply");
     }
 }

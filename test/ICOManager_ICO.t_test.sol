@@ -325,7 +325,7 @@ contract ICOManagerICO_test is Test {
             testScriptStrategic.buyToken.availableBalance,
             "(Buy month0) BJC strategic available"
         );
-        BJCCurrentBalance += testScriptStrategic.buyToken.availableBalance;
+        BJCCurrentBalance += testScriptStrategic.buyToken.bjcBalance;
         assertEq(ERC20(icoManager.getBaseToken()).balanceOf(ALICE) / 1e18, BJCCurrentBalance, "(Buy month0) BJC tokens");
         logBalance("month0");
     }
@@ -345,7 +345,7 @@ contract ICOManagerICO_test is Test {
             testScriptSeed.buyToken.availableBalance,
             "(Buy month1) BJC seed available"
         );
-        BJCCurrentBalance += testScriptSeed.buyToken.availableBalance;
+        BJCCurrentBalance += testScriptSeed.buyToken.bjcBalance;
         assertEq(ERC20(icoManager.getBaseToken()).balanceOf(ALICE) / 1e18, BJCCurrentBalance, "(Buy month1) BJC tokens");
         logBalance("month1");
     }
@@ -365,7 +365,7 @@ contract ICOManagerICO_test is Test {
             testScriptPrivateSale.buyToken.availableBalance,
             "(Buy month2) BJC PrivateSale available"
         );
-        BJCCurrentBalance += testScriptPrivateSale.buyToken.availableBalance;
+        BJCCurrentBalance += testScriptPrivateSale.buyToken.bjcBalance;
         assertEq(ERC20(icoManager.getBaseToken()).balanceOf(ALICE) / 1e18, BJCCurrentBalance, "(Buy month2) BJC tokens");
         logBalance("month2");
     }
@@ -385,7 +385,7 @@ contract ICOManagerICO_test is Test {
             testScriptIDO.buyToken.availableBalance,
             "(Buy month3) BJC ido available"
         );
-        BJCCurrentBalance += testScriptIDO.buyToken.availableBalance;
+        BJCCurrentBalance += testScriptIDO.buyToken.bjcBalance;
         assertEq(ERC20(icoManager.getBaseToken()).balanceOf(ALICE) / 1e18, BJCCurrentBalance, "(Buy month3) BJC tokens");
         logBalance("month3");
     }
@@ -405,7 +405,7 @@ contract ICOManagerICO_test is Test {
             testScriptPublicSale.buyToken.availableBalance,
             "(Buy month4) BJC PublicSale available"
         );
-        BJCCurrentBalance += testScriptPublicSale.buyToken.availableBalance;
+        BJCCurrentBalance += testScriptPublicSale.buyToken.bjcBalance;
         assertEq(ERC20(icoManager.getBaseToken()).balanceOf(ALICE) / 1e18, BJCCurrentBalance, "(Buy month4) BJC tokens");
         logBalance("month4");
     }
@@ -458,7 +458,6 @@ contract ICOManagerICO_test is Test {
             testScriptIDO.endLessClaim.availableBalance,
             "(Less claim) BJC IDO available"
         );
-        BJCCurrentBalance += testScriptIDO.endLess.bjcBalance;
         BJCCurrentBalance += testScriptIDO.endLessClaim.bjcBalance;
         assertEq(ERC20(icoManager.getBaseToken()).balanceOf(ALICE) / 1e18, BJCCurrentBalance, "(Less claim) BJC tokens");
 
@@ -506,9 +505,10 @@ contract ICOManagerICO_test is Test {
             testScriptStrategic.endLessClaim.availableBalance,
             "(Less claim) BJC strategic available"
         );
-        BJCCurrentBalance += testScriptStrategic.endLess.availableBalance;
-        BJCCurrentBalance += testScriptStrategic.endLessClaim.availableBalance;
-        assertEq(ERC20(icoManager.getBaseToken()).balanceOf(ALICE) / 1e18, BJCCurrentBalance, "(Less claim) BJC tokens");
+        BJCCurrentBalance += testScriptStrategic.endLessClaim.bjcBalance;
+        assertEq(
+            ERC20(icoManager.getBaseToken()).balanceOf(ALICE) / 1e18, BJCCurrentBalance, "(Less claim) BJC tokens1"
+        );
 
         logBalance("month12");
     }
@@ -576,11 +576,10 @@ contract ICOManagerICO_test is Test {
             "(Less claim) BJC publicSale available"
         );
 
-        BJCCurrentBalance += testScriptSeed.endLess.availableBalance;
-        BJCCurrentBalance += testScriptSeed.endLessClaim.availableBalance;
-        BJCCurrentBalance += testScriptPublicSale.endLess.availableBalance;
-        BJCCurrentBalance += testScriptPublicSale.endLessClaim.availableBalance;
-        assertEq(ERC20(icoManager.getBaseToken()).balanceOf(ALICE) / 1e18, BJCCurrentBalance, "(Less claim) BJC tokens");
+        BJCCurrentBalance += testScriptPublicSale.endLessClaim.bjcBalance;
+        assertEq(
+            ERC20(icoManager.getBaseToken()).balanceOf(ALICE) / 1e18, BJCCurrentBalance, "(Less claim) BJC tokens2"
+        );
 
         logBalance("month13");
     }
@@ -620,8 +619,7 @@ contract ICOManagerICO_test is Test {
             testScriptPrivateSale.endLessClaim.availableBalance,
             "(Less claim) BJC strategic available"
         );
-        BJCCurrentBalance += testScriptPrivateSale.endLess.availableBalance;
-        BJCCurrentBalance += testScriptPrivateSale.endLessClaim.availableBalance;
+        BJCCurrentBalance += testScriptPrivateSale.endLessClaim.bjcBalance;
         assertEq(ERC20(icoManager.getBaseToken()).balanceOf(ALICE) / 1e18, BJCCurrentBalance, "(Less claim) BJC tokens");
 
         logBalance("month14");

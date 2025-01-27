@@ -55,7 +55,7 @@ contract ICOManagerLoyalty_test is Test {
         vm.startPrank(ALICE);
         uint256 startTimeStamp = block.timestamp;
 
-        vm.warp(block.timestamp + 15 days);
+        //vm.warp(block.timestamp + 15 days);
         /**
          * покупка
          */
@@ -289,7 +289,7 @@ contract ICOManagerLoyalty_test is Test {
         uint256 startTimeStamp = block.timestamp;
         startHoax(ALICE, 10000 ether);
 
-        vm.warp(block.timestamp + 15 days);
+        //vm.warp(block.timestamp + 15 days);
         icoManager.buyLoyaltyToken{value: sendEth + gas}();
 
         /**
