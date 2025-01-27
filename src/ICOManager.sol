@@ -45,7 +45,7 @@ enum ICOStage {
 struct TokenomicSetting {
     address stageToken; //адрес по которому хранится тип токена
     string nameToken; //наименование токена
-    string simvolToken; //символ токена
+    string symbolToken; //символ токена
     uint256 maxTokenCount; //максимальное количество токенов
     uint256 soldTokenCount; //продано токенов
     uint256 price; //цена
@@ -86,14 +86,29 @@ contract ICOManager is Ownable2Step {
     //      Ewents     //
     /////////////////////
     event ICOStageChanged(address indexed from, ICOStage initialStage, ICOStage newStage);
-    event BuyToken(address indexed from, address indexed to, string tokenSimvol, uint256 tokenCount, uint256 rate);
-    event TransferToken(address indexed from, address indexed to, string tokenSimvol, uint256 tokenCount);
+    event BuyToken(
+        address indexed from,
+        address indexed to,
+        string tokenSimvol,
+        uint256 tokenCount,
+        uint256 priceUSD,
+        uint256 sumUSD,
+        uint256 rate
+    );
+    event TransferToken(
+        address indexed from,
+        address indexed to,
+        string tokenSimvol,
+        uint256 tokenCount,
+        uint256 priceUSD,
+        uint256 sumUSD
+    );
     event Withdraw(address indexed to, uint256 amount);
-    event Blacklist(address indexed _address, bool isBlacklisting);
-    event WhiteList(address indexed _address, TokenomicType _tokenomicType, uint256 _count);
-    event BurnTokens(TokenomicType tokenomic, uint256 count);
+    event Blacklist(address indexed blockedAddress, bool isBlacklisting);
+    event WhiteList(address indexed allowedAddress, TokenomicType tokenomicType, uint256 numberToken);
+    event BurnTokens(TokenomicType tokenomicType, uint256 numberToken);
     event PauseTrading(bool isPause);
-    event BatchTransfer(TokenomicType tokenomic, address[] recipients, uint256[] amount);
+    event BatchTransfer(TokenomicType tokenomicType, address[] recipients, uint256[] numberToken);
     event UpdateOracleAddress(address indexed oracle);
 
     //endregion
@@ -102,14 +117,14 @@ contract ICOManager is Ownable2Step {
     /////////////////////
     //      Errors     //
     /////////////////////
-    error Blacklisted();
-    error NotInWhitelisted();
-    error WhiteListTokenCount();
+    error Blacklisted(address blockedAddress);
+    error NotInWhitelisted(address missingAddress, TokenomicType tokenomicType);
+    error WhiteListTokenCount(uint256 allowedQuantity, uint256 purchasedQuantity);
     error ICONotStarted();
     error ICOCompleted();
     error TokenAlreadyExist();
     error MinSoldError();
-    error InsufficientFunds();
+    error InsufficientFunds(uint256 availableTokens, uint256 transferTokens);
     error WithdrawError();
     error NotApprove();
     error BurnICOToken();
@@ -129,7 +144,7 @@ contract ICOManager is Ownable2Step {
      * @param   to  the address being checked
      */
     modifier notInBlackList(address to) {
-        if (blacklists[to]) revert Blacklisted();
+        if (blacklists[to]) revert Blacklisted(to);
         _;
     }
 
@@ -138,7 +153,7 @@ contract ICOManager is Ownable2Step {
      * @dev     we check whether the address is whitelisted for a given type tokenomic
      */
     modifier inWhiteList(address to, TokenomicType _tokenomicType) {
-        if (!(whitelists[to][_tokenomicType] > 0)) revert NotInWhitelisted();
+        if (!(whitelists[to][_tokenomicType] > 0)) revert NotInWhitelisted(to, _tokenomicType);
         _;
     }
 
@@ -421,11 +436,11 @@ contract ICOManager is Ownable2Step {
             tokenomic == TokenomicType.Seed || tokenomic == TokenomicType.PrivateSale || tokenomic == TokenomicType.IDO
                 || tokenomic == TokenomicType.PublicSale
         ) {
-            try this.getTokenomicType() returns (TokenomicType activeStage) {
-                if (tokenomic != activeStage) {
+            if (icoStage != ICOStage.NoICO && icoStage != ICOStage.EndICO) {
+                if (tokenomic != this.getTokenomicType()) {
                     revert IncorrectParameters();
                 }
-            } catch {}
+            }
         }
         if (recipients.length != amount.length) {
             revert IncorrectParameters();
@@ -437,9 +452,10 @@ contract ICOManager is Ownable2Step {
         for (uint256 i = 0; i < amount.length; i++) {
             sumOfAmounts += amount[i];
         }
-
-        if (sumOfAmounts > tokenomicSettings[tokenomic].maxTokenCount - tokenomicSettings[tokenomic].soldTokenCount) {
-            revert InsufficientFunds();
+        uint256 availableTokens =
+            tokenomicSettings[tokenomic].maxTokenCount - tokenomicSettings[tokenomic].soldTokenCount;
+        if (sumOfAmounts > availableTokens) {
+            revert InsufficientFunds(availableTokens, sumOfAmounts);
         }
         emit BatchTransfer(tokenomic, recipients, amount);
         // Loop through all the recipients and send them the specified amount
@@ -736,21 +752,21 @@ contract ICOManager is Ownable2Step {
         tokenomicSettings[TokenomicType.PrivateSale] =
             TokenomicSetting(address(0), "BJCPrivateSale", "BJCPRI", 6_000_000 * 1e18, 0, 55 * 1e6, 12, 28, 5);
         tokenomicSettings[TokenomicType.IDO] =
-            TokenomicSetting(address(0), "BJCIDO", "BJCIDO", 5_000_000 * 1e18, 0, 65 * 1e6, 6, 30, 15);
+            TokenomicSetting(address(0), "BJCIDO", "BJCIDO", 5_000_000 * 1e18, 0, 65 * 1e6, 0, 0, 0);
         tokenomicSettings[TokenomicType.PublicSale] =
-            TokenomicSetting(address(0), "BJCPublicSale", "BJCPUB", 15_000_000 * 1e18, 0, 75 * 1e6, 9, 24, 5);
+            TokenomicSetting(address(0), "BJCPublicSale", "BJCPUB", 20_000_000 * 1e18, 0, 75 * 1e6, 9, 24, 5);
         tokenomicSettings[TokenomicType.Advisors] =
-            TokenomicSetting(address(0), "BJCAdvisors", "BJCADV", 1_500_000 * 1e18, 0, 75 * 1e6, 12, 36, 3);
+            TokenomicSetting(address(0), "BJCAdvisors", "BJCADV", 1_500_000 * 1e18, 0, 75 * 1e6, 0, 0, 0);
         tokenomicSettings[TokenomicType.Team] =
-            TokenomicSetting(address(0), "BJCTeam", "BJCTEAM", 4_500_000 * 1e18, 0, 75 * 1e6, 24, 24, 5);
+            TokenomicSetting(address(0), "BJCTeam", "BJCTEAM", 4_500_000 * 1e18, 0, 75 * 1e6, 0, 0, 0);
         tokenomicSettings[TokenomicType.FutureTeam] =
             TokenomicSetting(address(0), "BJCFutureTeam", "BJCFUT", 5_000_000 * 1e18, 0, 75 * 1e6, 12, 24, 0);
         tokenomicSettings[TokenomicType.Incentives] =
-            TokenomicSetting(address(0), "BJCIncentives", "BJCINC", 11_000_000 * 1e18, 0, 75 * 1e6, 0, 18, 15);
+            TokenomicSetting(address(0), "BJCIncentives", "BJCINC", 6_000_000 * 1e18, 0, 75 * 1e6, 0, 18, 15);
         tokenomicSettings[TokenomicType.Liquidity] =
-            TokenomicSetting(address(0), "BJCLiquidity", "BJCLIQ", 15_000_000 * 1e18, 0, 75 * 1e6, 0, 18, 25);
+            TokenomicSetting(address(0), "BJCLiquidity", "BJCLIQ", 15_000_000 * 1e18, 0, 75 * 1e6, 0, 0, 0);
         tokenomicSettings[TokenomicType.Ecosystem] =
-            TokenomicSetting(address(0), "BJCEcosystem", "BJCECO", 15_000_000 * 1e18, 0, 75 * 1e6, 0, 12, 10);
+            TokenomicSetting(address(0), "BJCEcosystem", "BJCECO", 15_000_000 * 1e18, 0, 75 * 1e6, 0, 0, 0);
         tokenomicSettings[TokenomicType.Loyalty] =
             TokenomicSetting(address(0), "BJCLoyalty", "BJCLOY", 15_000_000 * 1e18, 0, 75 * 1e6, 0, 48, 0);
     }
@@ -762,16 +778,25 @@ contract ICOManager is Ownable2Step {
      */
     function initVestingToken(TokenomicSetting storage _settings) private {
         TokenomicSetting memory tsSettings = _settings;
-        Schedule[] memory schedule = new Schedule[](tsSettings.vestingMonth);
-        uint256 partTokenVesting = BASIS_TOKENS_FOR_VESTING_TOKENS / tsSettings.vestingMonth;
-        for (uint256 i = 0; i < tsSettings.vestingMonth; i++) {
-            schedule[i] = Schedule(block.timestamp + tsSettings.cliffMonth * MONTH + (i + 1) * MONTH, partTokenVesting);
+        uint8 vestingMonth = tsSettings.vestingMonth;
+        if (tsSettings.vestingMonth == 0) {
+            vestingMonth += 1;
+        }
+        Schedule[] memory schedule = new Schedule[](vestingMonth);
+        if (tsSettings.vestingMonth == 0) {
+            schedule[0] = Schedule(block.timestamp + tsSettings.cliffMonth * MONTH, BASIS_TOKENS_FOR_VESTING_TOKENS);
+        } else {
+            uint256 partTokenVesting = BASIS_TOKENS_FOR_VESTING_TOKENS / tsSettings.vestingMonth;
+            for (uint256 i = 0; i < tsSettings.vestingMonth; i++) {
+                schedule[i] =
+                    Schedule(block.timestamp + tsSettings.cliffMonth * MONTH + (i + 1) * MONTH, partTokenVesting);
+            }
         }
         Vesting memory vestingParams = Vesting(
             block.timestamp, block.timestamp + tsSettings.cliffMonth * MONTH, tsSettings.unlockTokensPercent, schedule
         );
         _settings.stageToken = _vestingManager.createVesting(
-            tsSettings.nameToken, tsSettings.simvolToken, address(_baseToken), address(this), vestingParams
+            tsSettings.nameToken, tsSettings.symbolToken, address(_baseToken), address(this), vestingParams
         );
     }
 
@@ -788,12 +813,13 @@ contract ICOManager is Ownable2Step {
         }
         uint256 tokens = msg.value * rate / settings.price;
         if (tokens > whitelists[msg.sender][_tokenomicType]) {
-            revert WhiteListTokenCount();
+            revert WhiteListTokenCount(whitelists[msg.sender][_tokenomicType], tokens);
         }
-        if (tokens > settings.maxTokenCount - settings.soldTokenCount) {
-            revert InsufficientFunds();
+        uint256 availableTokens = settings.maxTokenCount - settings.soldTokenCount;
+        if (tokens > availableTokens) {
+            revert InsufficientFunds(availableTokens, tokens);
         }
-        emit BuyToken(owner(), msg.sender, settings.simvolToken, tokens, rate);
+        emit BuyToken(owner(), msg.sender, settings.symbolToken, tokens, settings.price, settings.price * tokens, rate);
         if (!_baseToken.approve(settings.stageToken, tokens)) revert NotApprove();
         VestingToken(settings.stageToken).mint(msg.sender, tokens);
         settings.soldTokenCount += tokens;
@@ -807,10 +833,11 @@ contract ICOManager is Ownable2Step {
      * @param amount number of tokens
      */
     function transferToken(address to, TokenomicSetting storage settings, uint256 amount) private {
-        if (amount > settings.maxTokenCount - settings.soldTokenCount) {
-            revert InsufficientFunds();
+        uint256 availableTokens = settings.maxTokenCount - settings.soldTokenCount;
+        if (amount > availableTokens) {
+            revert InsufficientFunds(availableTokens, amount);
         }
-        emit TransferToken(owner(), to, settings.simvolToken, amount);
+        emit TransferToken(owner(), to, settings.symbolToken, amount, settings.price, settings.price * amount);
         if (!_baseToken.approve(settings.stageToken, amount)) revert NotApprove();
         VestingToken(settings.stageToken).mint(to, amount);
         settings.soldTokenCount += amount;

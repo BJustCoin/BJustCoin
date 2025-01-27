@@ -165,7 +165,7 @@ contract VestingToken is IVestingToken, Initializable, ERC20Upgradeable {
         for (uint256 i = 0; i < scheduleLength;) {
             totalPercent += schedule[i].portion;
             bool isEndTimeOutOfOrder = (i != 0) && schedule[i - 1].endTime >= schedule[i].endTime;
-            if (cliff >= schedule[i].endTime || isEndTimeOutOfOrder) {
+            if (cliff > schedule[i].endTime || isEndTimeOutOfOrder) {
                 revert IncorrectScheduleTime(schedule[i].endTime);
             }
             unchecked {

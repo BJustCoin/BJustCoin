@@ -11,7 +11,7 @@ struct ICOManagerTestTimePoint {
 
 struct ICOManagerTestStartParams {
     string nameToken; //наименование токена
-    string simvolToken; //символ токена
+    string symbolToken; //символ токена
     uint256 maxTokenCount; //максимальное количество токенов
     uint256 soldTokenCount; //продано токенов
     uint256 price; //цена в центах
@@ -47,7 +47,7 @@ contract ICOManagerConst {
         ICOManagerTestScript memory result;
         ICOManagerTestStartParams memory startParams;
         startParams.nameToken = "BJCStrategic";
-        startParams.simvolToken = "BJCSTR";
+        startParams.symbolToken = "BJCSTR";
         startParams.maxTokenCount = 3_000_000;
         startParams.price = 35 * 1e6;
         startParams.cliffMonth = 12;
@@ -100,7 +100,7 @@ contract ICOManagerConst {
         ICOManagerTestScript memory result;
         ICOManagerTestStartParams memory startParams;
         startParams.nameToken = "BJCSeed";
-        startParams.simvolToken = "BJCSEED";
+        startParams.symbolToken = "BJCSEED";
         startParams.maxTokenCount = 4_000_000;
         startParams.price = 45 * 1e6;
         startParams.cliffMonth = 12;
@@ -153,7 +153,7 @@ contract ICOManagerConst {
         ICOManagerTestScript memory result;
         ICOManagerTestStartParams memory startParams;
         startParams.nameToken = "BJCPrivateSale";
-        startParams.simvolToken = "BJCPRI";
+        startParams.symbolToken = "BJCPRI";
         startParams.maxTokenCount = 6_000_000;
         startParams.price = 55 * 1e6;
         startParams.cliffMonth = 12;
@@ -206,7 +206,7 @@ contract ICOManagerConst {
         ICOManagerTestScript memory result;
         ICOManagerTestStartParams memory startParams;
         startParams.nameToken = "BJCIDO";
-        startParams.simvolToken = "BJCIDO";
+        startParams.symbolToken = "BJCIDO";
         startParams.maxTokenCount = 5_000_000;
         startParams.price = 65 * 1e6;
         startParams.cliffMonth = 6;
@@ -259,7 +259,7 @@ contract ICOManagerConst {
         ICOManagerTestScript memory result;
         ICOManagerTestStartParams memory startParams;
         startParams.nameToken = "BJCPublicSale";
-        startParams.simvolToken = "BJCPUB";
+        startParams.symbolToken = "BJCPUB";
         startParams.maxTokenCount = 15_000_000;
         startParams.price = 75 * 1e6;
         startParams.cliffMonth = 9;
@@ -312,7 +312,7 @@ contract ICOManagerConst {
         ICOManagerTestScript memory result;
         ICOManagerTestStartParams memory startParams;
         startParams.nameToken = "BJCSAdvisors";
-        startParams.simvolToken = "BJCADV";
+        startParams.symbolToken = "BJCADV";
         startParams.maxTokenCount = 1_500_000;
         startParams.price = 75 * 1e6;
         startParams.cliffMonth = 12;
@@ -365,7 +365,7 @@ contract ICOManagerConst {
         ICOManagerTestScript memory result;
         ICOManagerTestStartParams memory startParams;
         startParams.nameToken = "BJCTeam";
-        startParams.simvolToken = "BJCTEAM";
+        startParams.symbolToken = "BJCTEAM";
         startParams.maxTokenCount = 4_500_000;
         startParams.price = 75 * 1e6;
         startParams.cliffMonth = 24;
@@ -418,7 +418,7 @@ contract ICOManagerConst {
         ICOManagerTestScript memory result;
         ICOManagerTestStartParams memory startParams;
         startParams.nameToken = "BJCFutureTeam";
-        startParams.simvolToken = "BJCFUT";
+        startParams.symbolToken = "BJCFUT";
         startParams.maxTokenCount = 5_000_000;
         startParams.price = 75 * 1e6;
         startParams.cliffMonth = 12;
@@ -471,7 +471,7 @@ contract ICOManagerConst {
         ICOManagerTestScript memory result;
         ICOManagerTestStartParams memory startParams;
         startParams.nameToken = "BJCIncentives";
-        startParams.simvolToken = "BJCINC";
+        startParams.symbolToken = "BJCINC";
         startParams.maxTokenCount = 11_000_000;
         startParams.price = 75 * 1e6;
         startParams.cliffMonth = 0;
@@ -524,7 +524,7 @@ contract ICOManagerConst {
         ICOManagerTestScript memory result;
         ICOManagerTestStartParams memory startParams;
         startParams.nameToken = "BJCLiqudity";
-        startParams.simvolToken = "BJCLIQ";
+        startParams.symbolToken = "BJCLIQ";
         startParams.maxTokenCount = 15_000_000;
         startParams.price = 75 * 1e6;
         startParams.cliffMonth = 0;
@@ -577,7 +577,7 @@ contract ICOManagerConst {
         ICOManagerTestScript memory result;
         ICOManagerTestStartParams memory startParams;
         startParams.nameToken = "BJCEcosystem";
-        startParams.simvolToken = "BJCECO";
+        startParams.symbolToken = "BJCECO";
         startParams.maxTokenCount = 15_000_000;
         startParams.price = 75 * 1e6;
         startParams.cliffMonth = 0;
@@ -630,7 +630,7 @@ contract ICOManagerConst {
         ICOManagerTestScript memory result;
         ICOManagerTestStartParams memory startParams;
         startParams.nameToken = "BJCLoyalty";
-        startParams.simvolToken = "BJCLOY";
+        startParams.symbolToken = "BJCLOY";
         startParams.maxTokenCount = 15_000_000;
         startParams.price = 75 * 1e6;
         startParams.cliffMonth = 0;
