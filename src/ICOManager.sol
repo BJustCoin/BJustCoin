@@ -748,17 +748,17 @@ contract ICOManager is Ownable2Step {
         tokenomicSettings[TokenomicType.Strategic] =
             TokenomicSetting(address(0), "BJCStrategic", "BJCSTR", 3_000_000 * 1e18, 0, 35 * 1e6, 12, 24, 0);
         tokenomicSettings[TokenomicType.Seed] =
-            TokenomicSetting(address(0), "BJCSeed", "BJCSEED", 4_000_000 * 1e18, 0, 45 * 1e6, 6, 24, 15);
+            TokenomicSetting(address(0), "BJCSeed", "BJCSEED", 4_000_000 * 1e18, 0, 45 * 1e6, 12, 24, 15);
         tokenomicSettings[TokenomicType.PrivateSale] =
-            TokenomicSetting(address(0), "BJCPrivateSale", "BJCPRI", 6_000_000 * 1e18, 0, 55 * 1e6, 3, 12, 30);
+            TokenomicSetting(address(0), "BJCPrivateSale", "BJCPRI", 6_000_000 * 1e18, 0, 55 * 1e6, 3, 12, 5);
         tokenomicSettings[TokenomicType.IDO] =
             TokenomicSetting(address(0), "BJCIDO", "BJCIDO", 5_000_000 * 1e18, 0, 65 * 1e6, 0, 0, 0);
         tokenomicSettings[TokenomicType.PublicSale] =
             TokenomicSetting(address(0), "BJCPublicSale", "BJCPUB", 20_000_000 * 1e18, 0, 75 * 1e6, 0, 0, 0);
         tokenomicSettings[TokenomicType.Advisors] =
-            TokenomicSetting(address(0), "BJCAdvisors", "BJCADV", 1_500_000 * 1e18, 0, 75 * 1e6, 0, 24, 30);
+            TokenomicSetting(address(0), "BJCAdvisors", "BJCADV", 1_500_000 * 1e18, 0, 75 * 1e6, 12, 24, 3);
         tokenomicSettings[TokenomicType.Team] =
-            TokenomicSetting(address(0), "BJCTeam", "BJCTEAM", 4_500_000 * 1e18, 0, 75 * 1e6, 0, 24, 30);
+            TokenomicSetting(address(0), "BJCTeam", "BJCTEAM", 4_500_000 * 1e18, 0, 75 * 1e6, 24, 24, 3);
         tokenomicSettings[TokenomicType.FutureTeam] =
             TokenomicSetting(address(0), "BJCFutureTeam", "BJCFUT", 5_000_000 * 1e18, 0, 75 * 1e6, 12, 24, 0);
         tokenomicSettings[TokenomicType.Incentives] =
@@ -766,7 +766,7 @@ contract ICOManager is Ownable2Step {
         tokenomicSettings[TokenomicType.Liquidity] =
             TokenomicSetting(address(0), "BJCLiquidity", "BJCLIQ", 20_000_000 * 1e18, 0, 75 * 1e6, 0, 0, 0);
         tokenomicSettings[TokenomicType.Ecosystem] =
-            TokenomicSetting(address(0), "BJCEcosystem", "BJCECO", 10_000_000 * 1e18, 0, 75 * 1e6, 12, 24, 15);
+            TokenomicSetting(address(0), "BJCEcosystem", "BJCECO", 10_000_000 * 1e18, 0, 75 * 1e6, 0, 0, 0);
         tokenomicSettings[TokenomicType.Loyalty] =
             TokenomicSetting(address(0), "BJCLoyalty", "BJCLOY", 15_000_000 * 1e18, 0, 75 * 1e6, 0, 24, 30);
     }
