@@ -768,7 +768,7 @@ contract ICOManager is Ownable2Step {
         tokenomicSettings[TokenomicType.Ecosystem] =
             TokenomicSetting(address(0), "BJCEcosystem", "BJCECO", 10_000_000 * 1e18, 0, 75 * 1e6, 0, 0, 0);
         tokenomicSettings[TokenomicType.Loyalty] =
-            TokenomicSetting(address(0), "BJCLoyalty", "BJCLOY", 15_000_000 * 1e18, 0, 75 * 1e6, 0, 24, 30);
+            TokenomicSetting(address(0), "BJCLoyalty", "BJCLOY", 15_000_000 * 1e18, 0, 75 * 1e6, 0, 24, 5);
     }
 
     /**
